@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /drupal
-    destination: /var/www/html/
+    destination: /var/www/html/drupal
 hooks:
   BeforeInstall:
     - location: install_dependencies
