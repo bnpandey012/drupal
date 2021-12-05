@@ -22,7 +22,7 @@ class ContentRepositoryEnhancerTest extends TestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp(): void
+    public function setUp()
     {
         $cRepository = $this->createMock(ContentRepositoryInterface::class);
         $cRepository

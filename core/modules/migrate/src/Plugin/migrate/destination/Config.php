@@ -150,7 +150,7 @@ class Config extends DestinationBase implements ContainerFactoryPluginInterface,
   /**
    * {@inheritdoc}
    */
-  public function fields() {
+  public function fields(MigrationInterface $migration = NULL) {
     // @todo Dynamically fetch fields using Config Schema API.
   }
 

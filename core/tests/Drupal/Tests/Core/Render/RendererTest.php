@@ -264,13 +264,11 @@ class RendererTest extends RendererTestBase {
       '#attributes' => ['class' => ['baz']],
     ];
     $setup_code_type_link = function () {
-      $this->themeManager->expects($this->exactly(2))
+      $this->setupThemeContainer();
+      $this->themeManager->expects($this->at(0))
         ->method('render')
-        ->with($this->logicalOr('common_test_foo', 'container'))
+        ->with('common_test_foo', $this->anything())
         ->willReturnCallback(function ($theme, $vars) {
-          if ($theme == 'container') {
-            return '<div' . (string) (new Attribute($vars['#attributes'])) . '>' . $vars['#children'] . "</div>\n";
-          }
           return $vars['#foo'] . $vars['#bar'];
         });
     };
@@ -291,13 +289,11 @@ class RendererTest extends RendererTestBase {
       '#title' => 'bar',
     ];
     $setup_code_type_link = function () {
-      $this->themeManager->expects($this->exactly(2))
+      $this->setupThemeContainer();
+      $this->themeManager->expects($this->at(0))
         ->method('render')
-        ->with($this->logicalOr('link', 'container'))
+        ->with('link', $this->anything())
         ->willReturnCallback(function ($theme, $vars) {
-          if ($theme == 'container') {
-            return '<div' . (string) (new Attribute($vars['#attributes'])) . '>' . $vars['#children'] . "</div>\n";
-          }
           $attributes = new Attribute(['href' => $vars['#url']] + (isset($vars['#attributes']) ? $vars['#attributes'] : []));
           return '<a' . (string) $attributes . '>' . $vars['#title'] . '</a>';
         });
@@ -330,12 +326,7 @@ class RendererTest extends RendererTestBase {
       ],
     ];
     $setup_code = function () {
-      $this->themeManager->expects($this->exactly(2))
-        ->method('render')
-        ->with('container')
-        ->willReturnCallback(function ($theme, $vars) {
-          return '<div' . (string) (new Attribute($vars['#attributes'])) . '>' . $vars['#children'] . "</div>\n";
-        });
+      $this->setupThemeContainer($this->any());
     };
     $data[] = [$build, '<div class="foo"><div class="bar"></div>' . "\n" . '</div>' . "\n", $setup_code];
 
@@ -345,12 +336,7 @@ class RendererTest extends RendererTestBase {
       '#attributes' => ['class' => ['foo']],
     ];
     $setup_code = function () {
-      $this->themeManager->expects($this->once())
-        ->method('render')
-        ->with(['container'])
-        ->willReturnCallback(function ($theme, $vars) {
-          return '<div' . (string) (new Attribute($vars['#attributes'])) . '>' . $vars['#children'] . "</div>\n";
-        });
+      $this->setupThemeContainerMultiSuggestion($this->any());
     };
     $data[] = [$build, '<div class="foo"></div>' . "\n", $setup_code];
 
@@ -501,7 +487,7 @@ class RendererTest extends RendererTestBase {
     $output = $this->renderer->renderRoot($elements);
 
     // The lowest weight element should appear last in $output.
-    $this->assertGreaterThan(strpos($output, $first), strpos($output, $second));
+    $this->assertTrue(strpos($output, $second) > strpos($output, $first), 'Elements were sorted correctly by weight.');
 
     // Confirm that the $elements array has '#sorted' set to TRUE.
     $this->assertTrue($elements['#sorted'], "'#sorted' => TRUE was added to the array");
@@ -510,8 +496,8 @@ class RendererTest extends RendererTestBase {
     // ensure it remains sorted in the correct order. drupal_render() will
     // return an empty string if used on the same array in the same request.
     $children = Element::children($elements);
-    $this->assertSame('first', array_shift($children), 'Child found in the correct order.');
-    $this->assertSame('second', array_shift($children), 'Child found in the correct order.');
+    $this->assertTrue(array_shift($children) == 'first', 'Child found in the correct order.');
+    $this->assertTrue(array_shift($children) == 'second', 'Child found in the correct order.');
   }
 
   /**
@@ -536,7 +522,7 @@ class RendererTest extends RendererTestBase {
     $output = $this->renderer->renderRoot($elements);
 
     // The elements should appear in output in the same order as the array.
-    $this->assertLessThan(strpos($output, $first), strpos($output, $second));
+    $this->assertTrue(strpos($output, $second) < strpos($output, $first), 'Elements were not sorted.');
   }
 
   /**
@@ -744,6 +730,24 @@ class RendererTest extends RendererTestBase {
     }
   }
 
+  protected function setupThemeContainer($matcher = NULL) {
+    $this->themeManager->expects($matcher ?: $this->at(1))
+      ->method('render')
+      ->with('container', $this->anything())
+      ->willReturnCallback(function ($theme, $vars) {
+        return '<div' . (string) (new Attribute($vars['#attributes'])) . '>' . $vars['#children'] . "</div>\n";
+      });
+  }
+
+  protected function setupThemeContainerMultiSuggestion($matcher = NULL) {
+    $this->themeManager->expects($matcher ?: $this->at(1))
+      ->method('render')
+      ->with(['container'], $this->anything())
+      ->willReturnCallback(function ($theme, $vars) {
+        return '<div' . (string) (new Attribute($vars['#attributes'])) . '>' . $vars['#children'] . "</div>\n";
+      });
+  }
+
   /**
    * @covers ::render
    * @covers ::doRender
@@ -759,7 +763,7 @@ class RendererTest extends RendererTestBase {
       ->willReturn('foobar');
 
     // Test that defaults work.
-    $this->assertEquals('foobar', $this->renderer->renderRoot($element), 'Defaults work');
+    $this->assertEquals($this->renderer->renderRoot($element), 'foobar', 'Defaults work');
   }
 
   /**

@@ -43,7 +43,7 @@ class BlockComponentRenderArrayTest extends UnitTestCase {
   protected $blockManager;
 
   /**
-   * Data provider for test functions that should test block types.
+   * Dataprovider for test functions that should test block types.
    */
   public function providerBlockTypes() {
     return [

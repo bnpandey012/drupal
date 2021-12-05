@@ -14,13 +14,6 @@ use Drupal\Tests\UnitTestCase;
 class ConnectionTest extends UnitTestCase {
 
   /**
-   * A PDO statement prophecy.
-   *
-   * @var \PDOStatement|\Prophecy\Prophecy\ObjectProphecy
-   */
-  private $pdoStatement;
-
-  /**
    * A PDO object prophecy.
    *
    * @var \PDO|\Prophecy\Prophecy\ObjectProphecy
@@ -31,7 +24,6 @@ class ConnectionTest extends UnitTestCase {
    * {@inheritdoc}
    */
   public function setUp(): void {
-    $this->pdoStatement = $this->prophesize(\PDOStatement::class);
     $this->pdoConnection = $this->prophesize(\PDO::class);
   }
 
@@ -59,16 +51,10 @@ class ConnectionTest extends UnitTestCase {
    * @dataProvider providerVersionAndIsMariaDb
    */
   public function testVersionAndIsMariaDb(bool $expected_is_mariadb, string $server_version, string $expected_version): void {
-    $this->pdoStatement
-      ->fetchColumn()
+    $this->pdoConnection
+      ->getAttribute(\PDO::ATTR_SERVER_VERSION)
       ->shouldBeCalled()
       ->willReturn($server_version);
-
-    $this->pdoConnection
-      ->query('SELECT VERSION()')
-      ->shouldBeCalled()
-      ->willReturn($this->pdoStatement->reveal());
-
     $connection = $this->createConnection();
 
     $is_mariadb = $connection->isMariaDb();

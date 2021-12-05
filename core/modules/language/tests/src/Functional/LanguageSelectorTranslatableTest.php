@@ -70,8 +70,7 @@ class LanguageSelectorTranslatableTest extends BrowserTestBase {
   public function testLanguageStringSelector() {
     // Add another language.
     $edit = ['predefined_langcode' => 'es'];
-    $this->drupalGet('admin/config/regional/language/add');
-    $this->submitForm($edit, 'Add language');
+    $this->drupalPostForm('admin/config/regional/language/add', $edit, t('Add language'));
 
     // Translate the string English in Spanish (Inglés). Override config entity.
     $name_translation = 'Inglés';
@@ -85,10 +84,10 @@ class LanguageSelectorTranslatableTest extends BrowserTestBase {
     $this->drupalGet($path);
 
     // Get en language from selector.
-    $option = $this->assertSession()->optionExists('edit-settings-user-user-settings-language-langcode', 'en');
+    $elements = $this->xpath('//select[@id=:id]//option[@value=:option]', [':id' => 'edit-settings-user-user-settings-language-langcode', ':option' => 'en']);
 
     // Check that the language text is translated.
-    $this->assertSame($name_translation, $option->getText());
+    $this->assertEqual($elements[0]->getText(), $name_translation, 'Checking the option string English is translated to Spanish.');
   }
 
 }

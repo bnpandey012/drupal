@@ -30,7 +30,7 @@ class RegisterRouteEnhancersPassTest extends TestCase
 
         $builder = $this->createMock(ContainerBuilder::class);
         $definition = new Definition('router');
-        $builder->expects($this->atLeastOnce())
+        $builder->expects($this->at(0))
             ->method('hasDefinition')
             ->with('cmf_routing.dynamic_router')
             ->will($this->returnValue(true))

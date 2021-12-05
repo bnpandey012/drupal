@@ -41,7 +41,7 @@ class ContentEntityNormalizer extends NormalizerBase {
   protected $moduleHandler;
 
   /**
-   * Constructs a ContentEntityNormalizer object.
+   * Constructs an ContentEntityNormalizer object.
    *
    * @param \Drupal\hal\LinkManager\LinkManagerInterface $link_manager
    *   The hypermedia link manager.
@@ -73,7 +73,7 @@ class ContentEntityNormalizer extends NormalizerBase {
     ];
 
     // Create the array of normalized fields, starting with the URI.
-    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    /** @var $entity \Drupal\Core\Entity\ContentEntityInterface */
     $normalized = [
       '_links' => [
         'self' => [

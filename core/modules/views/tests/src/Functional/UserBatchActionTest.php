@@ -40,7 +40,7 @@ class UserBatchActionTest extends BrowserTestBase {
         'user_bulk_form[0]' => TRUE,
         'action' => 'user_batch_action_test_action',
       ];
-      $this->submitForm($edit, 'Apply');
+      $this->drupalPostForm(NULL, $edit, t('Apply'));
       $this->assertSession()->pageTextContains('One item has been processed.');
       $this->assertSession()->pageTextContains($theme . ' theme used');
     }

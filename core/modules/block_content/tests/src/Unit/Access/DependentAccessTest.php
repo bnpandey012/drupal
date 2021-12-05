@@ -42,7 +42,7 @@ class DependentAccessTest extends UnitTestCase {
   }
 
   /**
-   * Tests that the previous dependency is replaced when using set.
+   * Test that the previous dependency is replaced when using set.
    *
    * @covers ::setAccessDependency
    *
@@ -134,7 +134,7 @@ class DependentAccessTest extends UnitTestCase {
   }
 
   /**
-   * Data provider for all test methods.
+   * Dataprovider for all test methods.
    *
    * Provides test cases for calling setAccessDependency() or
    * mergeAccessDependency() first. A call to either should behave the same on a

@@ -122,7 +122,7 @@ abstract class OffCanvasTestBase extends WebDriverTestBase {
   }
 
   /**
-   * Data provider that returns theme name as the sole argument.
+   * Dataprovider that returns theme name as the sole argument.
    */
   public function themeDataProvider() {
     $themes = $this->getTestThemes();

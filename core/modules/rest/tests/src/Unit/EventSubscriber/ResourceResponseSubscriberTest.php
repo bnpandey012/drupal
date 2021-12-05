@@ -57,7 +57,6 @@ class ResourceResponseSubscriberTest extends UnitTestCase {
       'default' => [NULL, ''],
       'empty string' => [''],
       'simple string' => ['string'],
-      // cSpell:disable-next-line
       'complex string' => ['Complex \ string $%^&@ with unicode ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΣὨ'],
       'empty array' => [[]],
       'numeric array' => [['test']],

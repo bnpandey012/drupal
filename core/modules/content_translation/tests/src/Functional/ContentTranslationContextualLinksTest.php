@@ -120,15 +120,14 @@ class ContentTranslationContextualLinksTest extends BrowserTestBase {
       'settings[node][' . $this->bundle . '][translatable]' => TRUE,
       'settings[node][' . $this->bundle . '][fields][field_test_text]' => TRUE,
     ];
-    $this->drupalGet('admin/config/regional/content-language');
-    $this->submitForm($edit, 'Save configuration');
+    $this->drupalPostForm('admin/config/regional/content-language', $edit, t('Save configuration'));
     $this->drupalLogout();
 
     // Check that the link leads to the translate page.
     $this->drupalLogin($this->translator);
     $translate_link = 'node/' . $node->id() . '/translations';
     $this->drupalGet($translate_link);
-    $this->assertSession()->pageTextContains('Translations of ' . $node->label());
+    $this->assertRaw(t('Translations of %label', ['%label' => $node->label()]), 'The contextual link leads to the translate page.');
   }
 
 }

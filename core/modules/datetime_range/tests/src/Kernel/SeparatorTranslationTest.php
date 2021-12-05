@@ -54,7 +54,7 @@ class SeparatorTranslationTest extends KernelTestBase {
     $this->installEntitySchema('entity_test');
     $this->installEntitySchema('user');
     $this->installConfig(['system']);
-    $this->installSchema('system', ['sequences']);
+    $this->installSchema('system', ['sequences', 'key_value']);
 
     // Add a datetime range field.
     $this->fieldStorage = FieldStorageConfig::create([
@@ -106,6 +106,7 @@ class SeparatorTranslationTest extends KernelTestBase {
     $display = EntityViewDisplay::collectRenderDisplay($entity, 'default');
     $build = $display->build($entity);
     $output = $this->container->get('renderer')->renderRoot($build);
+    $this->verbose($output);
     $this->assertStringContainsString('UNTRANSLATED', (string) $output);
 
     // Translate the separator.
@@ -122,6 +123,7 @@ class SeparatorTranslationTest extends KernelTestBase {
     $display = EntityViewDisplay::collectRenderDisplay($entity, 'default');
     $build = $display->build($entity);
     $output = $this->container->get('renderer')->renderRoot($build);
+    $this->verbose($output);
     $this->assertStringContainsString('NL_TRANSLATED!', (string) $output);
   }
 

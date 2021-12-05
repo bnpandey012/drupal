@@ -66,14 +66,13 @@ class ChainRouteCollection extends RouteCollection
     /**
      * Adds a route.
      *
-     * @param string $name     The route name
-     * @param Route  $route    A Route instance
-     * @param int    $priority The route priority
+     * @param string $name  The route name
+     * @param Route  $route A Route instance
      */
-    public function add($name, Route $route, int $priority = 0)
+    public function add($name, Route $route)
     {
         $this->createInternalCollection();
-        $this->routeCollection->add($name, $route, $priority);
+        $this->routeCollection->add($name, $route);
     }
 
     /**

@@ -39,7 +39,7 @@ abstract class ImageFieldTestBase extends BrowserTestBase {
   ];
 
   /**
-   * A user with permissions to administer content types and image styles.
+   * An user with permissions to administer content types and image styles.
    *
    * @var \Drupal\user\UserInterface
    */
@@ -85,8 +85,7 @@ abstract class ImageFieldTestBase extends BrowserTestBase {
       'title[0][value]' => $this->randomMachineName(),
     ];
     $edit['files[' . $field_name . '_0]'] = \Drupal::service('file_system')->realpath($image->uri);
-    $this->drupalGet('node/add/' . $type);
-    $this->submitForm($edit, 'Preview');
+    $this->drupalPostForm('node/add/' . $type, $edit, t('Preview'));
   }
 
   /**
@@ -106,11 +105,10 @@ abstract class ImageFieldTestBase extends BrowserTestBase {
       'title[0][value]' => $this->randomMachineName(),
     ];
     $edit['files[' . $field_name . '_0]'] = \Drupal::service('file_system')->realpath($image->uri);
-    $this->drupalGet('node/add/' . $type);
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('node/add/' . $type, $edit, t('Save'));
     if ($alt) {
       // Add alt text.
-      $this->submitForm([$field_name . '[0][alt]' => $alt], 'Save');
+      $this->drupalPostForm(NULL, [$field_name . '[0][alt]' => $alt], t('Save'));
     }
 
     // Retrieve ID of the newly created node from the current URL.
@@ -123,10 +121,7 @@ abstract class ImageFieldTestBase extends BrowserTestBase {
    * Retrieves the fid of the last inserted file.
    */
   protected function getLastFileId() {
-    return (int) \Drupal::entityQueryAggregate('file')
-      ->accessCheck(FALSE)
-      ->aggregate('fid', 'max')
-      ->execute()[0]['fid_max'];
+    return (int) \Drupal::entityQueryAggregate('file')->aggregate('fid', 'max')->execute()[0]['fid_max'];
   }
 
 }

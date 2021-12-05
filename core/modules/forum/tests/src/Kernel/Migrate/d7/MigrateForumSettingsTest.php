@@ -11,13 +11,7 @@ use Drupal\Tests\migrate_drupal\Kernel\d7\MigrateDrupal7TestBase;
  */
 class MigrateForumSettingsTest extends MigrateDrupal7TestBase {
 
-  /**
-   * Modules to enable.
-   *
-   * Don't alphabetize these. They're in dependency order.
-   *
-   * @var array
-   */
+  // Don't alphabetize these. They're in dependency order.
   protected static $modules = [
     'comment',
     'field',
@@ -42,12 +36,12 @@ class MigrateForumSettingsTest extends MigrateDrupal7TestBase {
    */
   public function testForumSettingsMigration() {
     $config = $this->config('forum.settings');
-    $this->assertSame(9, $config->get('block.active.limit'));
-    $this->assertSame(4, $config->get('block.new.limit'));
-    $this->assertSame(10, $config->get('topics.hot_threshold'));
-    $this->assertSame(25, $config->get('topics.page_limit'));
-    $this->assertSame(1, $config->get('topics.order'));
-    $this->assertSame('forums', $config->get('vocabulary'));
+    $this->assertIdentical(9, $config->get('block.active.limit'));
+    $this->assertIdentical(4, $config->get('block.new.limit'));
+    $this->assertIdentical(10, $config->get('topics.hot_threshold'));
+    $this->assertIdentical(25, $config->get('topics.page_limit'));
+    $this->assertIdentical(1, $config->get('topics.order'));
+    $this->assertIdentical('forums', $config->get('vocabulary'));
   }
 
 }

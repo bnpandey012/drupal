@@ -7,7 +7,6 @@ use Drupal\Core\Config\UnmetDependenciesException;
 use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Extension\InfoParserException;
-use Drupal\Core\Extension\ModuleDependencyMessageTrait;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ModuleInstallerInterface;
@@ -18,6 +17,7 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\user\PermissionHandlerInterface;
 use Drupal\Core\Url;
+use Drupal\system\ModuleDependencyMessageTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -75,13 +75,6 @@ class ModulesListForm extends FormBase {
    * @var \Drupal\Core\Extension\ModuleExtensionList
    */
   protected $moduleExtensionList;
-
-  /**
-   * The access manager.
-   *
-   * @var \Drupal\Core\Access\AccessManagerInterface
-   */
-  protected $accessManager;
 
   /**
    * {@inheritdoc}

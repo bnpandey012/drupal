@@ -26,7 +26,7 @@ abstract class FileFieldTestBase extends BrowserTestBase {
   protected static $modules = ['node', 'file', 'file_module_test', 'field_ui'];
 
   /**
-   * A user with administration permissions.
+   * An user with administration permissions.
    *
    * @var \Drupal\user\UserInterface
    */
@@ -74,10 +74,7 @@ abstract class FileFieldTestBase extends BrowserTestBase {
    * Retrieves the fid of the last inserted file.
    */
   public function getLastFileId() {
-    return (int) \Drupal::entityQueryAggregate('file')
-      ->accessCheck(FALSE)
-      ->aggregate('fid', 'max')
-      ->execute()[0]['fid_max'];
+    return (int) \Drupal::entityQueryAggregate('file')->aggregate('fid', 'max')->execute()[0]['fid_max'];
   }
 
   /**
@@ -157,7 +154,7 @@ abstract class FileFieldTestBase extends BrowserTestBase {
       $node->save();
       $node_storage->resetCache([$nid]);
       $node = $node_storage->load($nid);
-      $this->assertNotEquals($nid, $node->getRevisionId(), 'Node revision exists.');
+      $this->assertNotEqual($nid, $node->getRevisionId(), 'Node revision exists.');
     }
     $this->drupalGet("node/$nid/edit");
     $page = $this->getSession()->getPage();
@@ -178,11 +175,11 @@ abstract class FileFieldTestBase extends BrowserTestBase {
       }
       else {
         $page->attachFileToField($name, $file_path);
-        $this->submitForm([], 'Upload');
+        $this->drupalPostForm(NULL, [], t('Upload'));
       }
     }
 
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm(NULL, $edit, t('Save'));
 
     return $nid;
   }
@@ -197,9 +194,8 @@ abstract class FileFieldTestBase extends BrowserTestBase {
       'revision' => (string) (int) $new_revision,
     ];
 
-    $this->drupalGet('node/' . $nid . '/edit');
-    $this->submitForm([], 'Remove');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('node/' . $nid . '/edit', [], t('Remove'));
+    $this->drupalPostForm(NULL, $edit, t('Save'));
   }
 
   /**
@@ -211,9 +207,8 @@ abstract class FileFieldTestBase extends BrowserTestBase {
       'revision' => (string) (int) $new_revision,
     ];
 
-    $this->drupalGet('node/' . $nid . '/edit');
-    $this->submitForm([], 'Remove');
-    $this->submitForm($edit, 'Save');
+    $this->drupalPostForm('node/' . $nid . '/edit', [], t('Remove'));
+    $this->drupalPostForm(NULL, $edit, t('Save'));
   }
 
   /**
@@ -223,7 +218,7 @@ abstract class FileFieldTestBase extends BrowserTestBase {
     $this->container->get('entity_type.manager')->getStorage('file')->resetCache();
     $db_file = File::load($file->id());
     $message = isset($message) ? $message : new FormattableMarkup('File %file exists in database at the correct path.', ['%file' => $file->getFileUri()]);
-    $this->assertEquals($file->getFileUri(), $db_file->getFileUri(), $message);
+    $this->assertEqual($db_file->getFileUri(), $file->getFileUri(), $message);
   }
 
   /**

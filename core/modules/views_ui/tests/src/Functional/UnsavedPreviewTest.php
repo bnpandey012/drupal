@@ -10,10 +10,10 @@ namespace Drupal\Tests\views_ui\Functional;
 class UnsavedPreviewTest extends UITestBase {
 
   /**
-   * Views used by this test.
-   *
-   * @var array
-   */
+    * Views used by this test.
+    *
+    * @var array
+    */
   public static $testViews = ['content'];
 
   /**
@@ -55,28 +55,28 @@ class UnsavedPreviewTest extends UITestBase {
     $this->drupalGet('admin/structure/views/view/content');
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->submitForm([], 'Add Page');
+    $this->drupalPostForm(NULL, [], t('Add Page'));
     $this->assertSession()->statusCodeEquals(200);
 
     $this->drupalGet('admin/structure/views/nojs/display/content/page_2/path');
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->submitForm(['path' => 'foobarbaz'], 'Apply');
+    $this->drupalPostForm(NULL, ['path' => 'foobarbaz'], t('Apply'));
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->submitForm([], 'Update preview');
+    $this->drupalPostForm(NULL, [], t('Update preview'));
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('This display has no path');
+    $this->assertText(t('This display has no path'));
 
     $this->drupalGet('admin/structure/views/view/content/edit/page_2');
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->submitForm([], 'Save');
+    $this->drupalPostForm(NULL, [], t('Save'));
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->submitForm([], 'Update preview');
+    $this->drupalPostForm(NULL, [], t('Update preview'));
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->linkByHrefExists('foobarbaz');
+    $this->assertLinkByHref('foobarbaz');
   }
 
 }

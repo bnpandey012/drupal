@@ -30,11 +30,11 @@ class CommentLinksAlterTest extends CommentTestBase {
     $this->drupalLogin($this->webUser);
     $comment_text = $this->randomMachineName();
     $subject = $this->randomMachineName();
-    $this->postComment($this->node, $comment_text, $subject);
+    $comment = $this->postComment($this->node, $comment_text, $subject);
 
     $this->drupalGet('node/' . $this->node->id());
 
-    $this->assertSession()->linkExists('Report');
+    $this->assertSession()->linkExists(t('Report'));
   }
 
 }

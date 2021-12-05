@@ -55,7 +55,7 @@ class ChainRouter implements ChainRouterInterface, WarmableInterface
     private $routeCollection;
 
     /**
-     * @var LoggerInterface|null
+     * @var null|LoggerInterface
      */
     protected $logger;
 

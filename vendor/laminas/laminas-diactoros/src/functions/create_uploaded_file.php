@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
+ */
+
 declare(strict_types=1);
 
 namespace Laminas\Diactoros;
@@ -26,7 +32,7 @@ function createUploadedFile(array $spec) : UploadedFile
 
     return new UploadedFile(
         $spec['tmp_name'],
-        (int) $spec['size'],
+        $spec['size'],
         $spec['error'],
         $spec['name'] ?? null,
         $spec['type'] ?? null

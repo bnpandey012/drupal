@@ -27,7 +27,7 @@ class FieldMapEnhancerTest extends TestCase
      */
     private $enhancer;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->request = Request::create('/test');
         $mapping = ['static_pages' => 'cmf_content.controller:indexAction'];

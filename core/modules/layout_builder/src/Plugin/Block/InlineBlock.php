@@ -263,7 +263,7 @@ class InlineBlock extends BlockBase implements ContainerFactoryPluginInterface, 
    * Saves the block_content entity for this plugin.
    *
    * @param bool $new_revision
-   *   Whether to create new revision, if the block was modified.
+   *   Whether to create new revision.
    * @param bool $duplicate_block
    *   Whether to duplicate the "block_content" entity.
    */
@@ -283,8 +283,6 @@ class InlineBlock extends BlockBase implements ContainerFactoryPluginInterface, 
     }
 
     if ($block) {
-      // Since the custom block is only set if it was unserialized, the flag
-      // will only effect blocks which were modified or serialized originally.
       if ($new_revision) {
         $block->setNewRevision();
       }

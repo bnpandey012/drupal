@@ -70,7 +70,7 @@ class DynamicRouterTest extends TestCase
 
     const URL = '/foo/bar';
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->routeDocument = $this->createMock(RouteMock::class);
 
@@ -157,7 +157,7 @@ class DynamicRouterTest extends TestCase
     {
         $generator = $this->createMock(UrlGeneratorInterface::class);
         $router = new DynamicRouter($this->context, $this->matcher, $generator);
-        $this->assertIsString($router->getRouteDebugMessage('test'));
+        $this->assertInternalType('string', $router->getRouteDebugMessage('test'));
 
         $this->assertTrue($router->supports('some string'));
         $this->assertFalse($router->supports($this));
@@ -192,7 +192,7 @@ class DynamicRouterTest extends TestCase
         $test = $this;
         $this->enhancer->expects($this->once())
             ->method('enhance')
-            ->with($this->equalTo($routeDefaults), $this->callback(function (Request $request) {
+            ->with($this->equalTo($routeDefaults), $this->callback(function (Request $request) use ($test) {
                 return self::URL === $request->server->get('REQUEST_URI');
             }))
             ->will($this->returnValue($expected))
@@ -217,7 +217,7 @@ class DynamicRouterTest extends TestCase
         $test = $this;
         $this->enhancer->expects($this->once())
             ->method('enhance')
-            ->with($this->equalTo($routeDefaults), $this->callback(function (Request $request) {
+            ->with($this->equalTo($routeDefaults), $this->callback(function (Request $request) use ($test) {
                 return self::URL === $request->server->get('REQUEST_URI');
             }))
             ->will($this->returnValue($expected))
@@ -245,7 +245,7 @@ class DynamicRouterTest extends TestCase
         $test = $this;
         $this->enhancer->expects($this->once())
             ->method('enhance')
-            ->with($this->equalTo($routeDefaults), $this->callback(function (Request $request) {
+            ->with($this->equalTo($routeDefaults), $this->callback(function (Request $request) use ($test) {
                 return self::URL === $request->server->get('REQUEST_URI');
             }))
             ->will($this->returnValue($expected))
@@ -328,7 +328,7 @@ class DynamicRouterTest extends TestCase
     {
         $generator = $this->createMock(UrlGeneratorInterface::class);
         $router = new DynamicRouter($this->context, $this->matcher, $generator);
-        $this->assertIsString($router->getRouteDebugMessage('test'));
+        $this->assertInternalType('string', $router->getRouteDebugMessage('test'));
     }
 
     /**

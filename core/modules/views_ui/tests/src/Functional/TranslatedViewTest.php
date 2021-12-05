@@ -70,19 +70,19 @@ class TranslatedViewTest extends UITestBase {
 
     // Check the original string.
     $this->drupalGet($edit_url);
-    $this->assertSession()->titleEquals('Files (File) | Drupal');
+    $this->assertTitle('Files (File) | Drupal');
 
     // Translate the label of the view.
     $this->drupalGet($translation_url);
     $edit = [
       'translation[config_names][views.view.files][label]' => 'Fichiers',
     ];
-    $this->submitForm($edit, 'Save translation');
+    $this->drupalPostForm(NULL, $edit, t('Save translation'));
 
     // Check if the label is translated.
     $this->drupalGet($edit_url, ['language' => \Drupal::languageManager()->getLanguage('fr')]);
-    $this->assertSession()->titleEquals('Files (File) | Drupal');
-    $this->assertSession()->pageTextNotContains('Fichiers');
+    $this->assertTitle('Files (File) | Drupal');
+    $this->assertNoText('Fichiers');
   }
 
 }

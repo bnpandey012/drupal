@@ -3,6 +3,8 @@
 namespace Drupal\Core\Routing;
 
 use Drupal\Core\Path\CurrentPathStack;
+use Symfony\Cmf\Component\Routing\LazyRouteCollection;
+use Symfony\Cmf\Component\Routing\RouteProviderInterface as BaseRouteProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -27,13 +29,22 @@ use Symfony\Component\Routing\RouterInterface;
  *    regex. See ::matchCollection().
  * 4. Enhance the list of route attributes, for example loading entity objects.
  *    See ::applyRouteEnhancers().
+ *
+ * This implementation uses ideas of the following routers:
+ * - \Symfony\Cmf\Component\Routing\DynamicRouter
+ * - \Drupal\Core\Routing\UrlMatcher
+ * - \Symfony\Cmf\Component\Routing\NestedMatcher\NestedMatcher
+ *
+ * @see \Symfony\Cmf\Component\Routing\DynamicRouter
+ * @see \Drupal\Core\Routing\UrlMatcher
+ * @see \Symfony\Cmf\Component\Routing\NestedMatcher\NestedMatcher
  */
 class Router extends UrlMatcher implements RequestMatcherInterface, RouterInterface {
 
   /**
    * The route provider responsible for the first-pass match.
    *
-   * @var \Drupal\Core\Routing\RouteProviderInterface
+   * @var \Symfony\Cmf\Component\Routing\RouteProviderInterface
    */
   protected $routeProvider;
 
@@ -61,14 +72,14 @@ class Router extends UrlMatcher implements RequestMatcherInterface, RouterInterf
   /**
    * Constructs a new Router.
    *
-   * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
+   * @param \Symfony\Cmf\Component\Routing\RouteProviderInterface $route_provider
    *   The route provider.
    * @param \Drupal\Core\Path\CurrentPathStack $current_path
    *   The current path stack.
    * @param \Symfony\Component\Routing\Generator\UrlGeneratorInterface $url_generator
    *   The URL generator.
    */
-  public function __construct(RouteProviderInterface $route_provider, CurrentPathStack $current_path, BaseUrlGeneratorInterface $url_generator) {
+  public function __construct(BaseRouteProviderInterface $route_provider, CurrentPathStack $current_path, BaseUrlGeneratorInterface $url_generator) {
     parent::__construct($current_path);
     $this->routeProvider = $route_provider;
     $this->urlGenerator = $url_generator;
@@ -107,19 +118,7 @@ class Router extends UrlMatcher implements RequestMatcherInterface, RouterInterf
    * {@inheritdoc}
    */
   public function matchRequest(Request $request) {
-    try {
-      $collection = $this->getInitialRouteCollection($request);
-    }
-    // PHP 7.4 introduces changes to its serialization format, which mean that
-    // older versions of PHP are unable to unserialize data that is serialized
-    // in PHP 7.4. If the site's version of PHP has been downgraded, then
-    // attempting to unserialize routes from the database will fail, and so the
-    // router needs to be rebuilt on the current PHP version.
-    // See https://www.php.net/manual/en/migration74.incompatible.php.
-    catch (\TypeError $e) {
-      \Drupal::service('router.builder')->rebuild();
-      $collection = $this->getInitialRouteCollection($request);
-    }
+    $collection = $this->getInitialRouteCollection($request);
     if ($collection->count() === 0) {
       throw new ResourceNotFoundException(sprintf('No routes found for "%s".', $this->currentPath->getPath()));
     }

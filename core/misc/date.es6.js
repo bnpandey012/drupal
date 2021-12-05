@@ -3,7 +3,7 @@
  * Polyfill for HTML5 date input.
  */
 
-(function ($, Modernizr, Drupal, once) {
+(function($, Modernizr, Drupal) {
   /**
    * Attach datepicker fallback on date elements.
    *
@@ -15,11 +15,33 @@
    */
   Drupal.behaviors.date = {
     attach(context, settings) {
+      const dataFieldElements = 'data-drupal-field-elements';
+      const dataDatepickerProcessed = 'data-datepicker-is-processed';
+
+      /**
+       * Returns a CSS selector for a date field to process.
+       *
+       * The dataDatepickerProcessed attribute prevents a field from being
+       * selected and processed more than once.
+       *
+       * @param {string} elements
+       *   The data attribute value.
+       *
+       * @return {string}
+       *   A CSS Selector.
+       */
+      const getDateSelector = elements =>
+        [
+          `[${dataFieldElements}="${elements}"]`,
+          `:not([${dataDatepickerProcessed}="${elements}"])`,
+        ].join('');
+
       // If the browser does not support a native datepicker, add date
       // formatting instructions on date/time fields.
       if (Modernizr.inputtypes.date === false) {
-        once('datepicker', '[data-drupal-field-elements="date-time"]').forEach(
-          (dateTime) => {
+        Array.prototype.forEach.call(
+          document.querySelectorAll(getDateSelector('date-time')),
+          dateTime => {
             const dateInput = dateTime.querySelector('input[type="date"]');
             const timeInput = dateTime.querySelector('input[type="time"]');
             const help = Drupal.theme.dateTimeHelp({
@@ -29,7 +51,7 @@
               timeDesc: timeInput.dataset.help,
             });
 
-            [dateInput, timeInput].forEach((input) => {
+            [dateInput, timeInput].forEach(input => {
               input.setAttribute(
                 'aria-describedby',
                 `${input.id}--description`,
@@ -41,11 +63,15 @@
             });
 
             Drupal.DatepickerPolyfill.attachDescription(dateTime, help);
+
+            // Set attribute to prevent element from being processed again.
+            dateTime.setAttribute(dataDatepickerProcessed, 'date-time');
           },
         );
 
-        once('datepicker', '[data-drupal-field-elements="date"]').forEach(
-          (date) => {
+        Array.prototype.forEach.call(
+          document.querySelectorAll(getDateSelector('date')),
+          date => {
             const dateInput = date.querySelector('input[type="date"]');
             const help = Drupal.theme.dateHelp({
               dateDesc: dateInput.dataset.help,
@@ -60,6 +86,9 @@
             // changed to reflect this.
             dateInput.setAttribute('type', 'text');
             Drupal.DatepickerPolyfill.attachDescription(date, help, id);
+
+            // Set attribute to prevent element from selection on next run.
+            date.setAttribute(dataDatepickerProcessed, 'date');
           },
         );
       }
@@ -151,4 +180,4 @@
     `<div class="no-native-datepicker-help">
        <span id="${dateId}">${dateDesc}</span> <span id="${timeId}">${timeDesc}</span>
      </div>`;
-})(jQuery, Modernizr, Drupal, once);
+})(jQuery, Modernizr, Drupal);

@@ -151,12 +151,3 @@ th.select-all {
     display: none;
   }
 }
-
-/**
- * Target every .form-text input where its parent is a form-item inside a table
- * cell.
- */
-td > .form-item > .form-text,
-td > .ajax-new-content > .form-item > .form-text {
-  width: 100%;
-}

@@ -30,24 +30,24 @@ use Symfony\Component\Process\Pipes\WindowsPipes;
  */
 class Process implements \IteratorAggregate
 {
-    public const ERR = 'err';
-    public const OUT = 'out';
+    const ERR = 'err';
+    const OUT = 'out';
 
-    public const STATUS_READY = 'ready';
-    public const STATUS_STARTED = 'started';
-    public const STATUS_TERMINATED = 'terminated';
+    const STATUS_READY = 'ready';
+    const STATUS_STARTED = 'started';
+    const STATUS_TERMINATED = 'terminated';
 
-    public const STDIN = 0;
-    public const STDOUT = 1;
-    public const STDERR = 2;
+    const STDIN = 0;
+    const STDOUT = 1;
+    const STDERR = 2;
 
     // Timeout Precision in seconds.
-    public const TIMEOUT_PRECISION = 0.2;
+    const TIMEOUT_PRECISION = 0.2;
 
-    public const ITER_NON_BLOCKING = 1; // By default, iterating over outputs is a blocking call, use this flag to make it non-blocking
-    public const ITER_KEEP_OUTPUT = 2;  // By default, outputs are cleared while iterating, use this flag to keep them in memory
-    public const ITER_SKIP_OUT = 4;     // Use this flag to skip STDOUT while iterating
-    public const ITER_SKIP_ERR = 8;     // Use this flag to skip STDERR while iterating
+    const ITER_NON_BLOCKING = 1; // By default, iterating over outputs is a blocking call, use this flag to make it non-blocking
+    const ITER_KEEP_OUTPUT = 2;  // By default, outputs are cleared while iterating, use this flag to keep them in memory
+    const ITER_SKIP_OUT = 4;     // Use this flag to skip STDOUT while iterating
+    const ITER_SKIP_ERR = 8;     // Use this flag to skip STDERR while iterating
 
     private $callback;
     private $hasCallback = false;
@@ -132,7 +132,7 @@ class Process implements \IteratorAggregate
      * @param array          $command The command to run and its arguments listed as separate entries
      * @param string|null    $cwd     The working directory or null to use the working dir of the current PHP process
      * @param array|null     $env     The environment variables or null to use the same environment as the current PHP process
-     * @param mixed          $input   The input as stream resource, scalar or \Traversable, or null for no input
+     * @param mixed|null     $input   The input as stream resource, scalar or \Traversable, or null for no input
      * @param int|float|null $timeout The timeout in seconds or null to disable
      *
      * @throws LogicException When proc_open is not installed
@@ -144,7 +144,7 @@ class Process implements \IteratorAggregate
         }
 
         if (!\is_array($command)) {
-            @trigger_error(sprintf('Passing a command as string when creating a "%s" instance is deprecated since Symfony 4.2, pass it as an array of its arguments instead, or use the "Process::fromShellCommandline()" constructor if you need features provided by the shell.', __CLASS__), \E_USER_DEPRECATED);
+            @trigger_error(sprintf('Passing a command as string when creating a "%s" instance is deprecated since Symfony 4.2, pass it as an array of its arguments instead, or use the "Process::fromShellCommandline()" constructor if you need features provided by the shell.', __CLASS__), E_USER_DEPRECATED);
         }
 
         $this->commandline = $command;
@@ -183,7 +183,7 @@ class Process implements \IteratorAggregate
      * @param string         $command The command line to pass to the shell of the OS
      * @param string|null    $cwd     The working directory or null to use the working dir of the current PHP process
      * @param array|null     $env     The environment variables or null to use the same environment as the current PHP process
-     * @param mixed          $input   The input as stream resource, scalar or \Traversable, or null for no input
+     * @param mixed|null     $input   The input as stream resource, scalar or \Traversable, or null for no input
      * @param int|float|null $timeout The timeout in seconds or null to disable
      *
      * @return static
@@ -196,16 +196,6 @@ class Process implements \IteratorAggregate
         $process->commandline = $command;
 
         return $process;
-    }
-
-    public function __sleep()
-    {
-        throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
-    }
-
-    public function __wakeup()
-    {
-        throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
     }
 
     public function __destruct()
@@ -768,7 +758,7 @@ class Process implements \IteratorAggregate
             return null;
         }
 
-        return self::$exitCodes[$exitcode] ?? 'Unknown error';
+        return isset(self::$exitCodes[$exitcode]) ? self::$exitCodes[$exitcode] : 'Unknown error';
     }
 
     /**
@@ -948,7 +938,7 @@ class Process implements \IteratorAggregate
     {
         $this->lastOutputTime = microtime(true);
 
-        fseek($this->stdout, 0, \SEEK_END);
+        fseek($this->stdout, 0, SEEK_END);
         fwrite($this->stdout, $line);
         fseek($this->stdout, $this->incrementalOutputOffset);
     }
@@ -962,7 +952,7 @@ class Process implements \IteratorAggregate
     {
         $this->lastOutputTime = microtime(true);
 
-        fseek($this->stderr, 0, \SEEK_END);
+        fseek($this->stderr, 0, SEEK_END);
         fwrite($this->stderr, $line);
         fseek($this->stderr, $this->incrementalErrorOutputOffset);
     }
@@ -998,7 +988,7 @@ class Process implements \IteratorAggregate
      */
     public function setCommandLine($commandline)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.2.', __METHOD__), \E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.2.', __METHOD__), E_USER_DEPRECATED);
 
         $this->commandline = $commandline;
 
@@ -1234,7 +1224,7 @@ class Process implements \IteratorAggregate
      */
     public function inheritEnvironmentVariables($inheritEnv = true)
     {
-        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.4, env variables are always inherited.', __METHOD__), \E_USER_DEPRECATED);
+        @trigger_error(sprintf('The "%s()" method is deprecated since Symfony 4.4, env variables are always inherited.', __METHOD__), E_USER_DEPRECATED);
 
         if (!$inheritEnv) {
             throw new InvalidArgumentException('Not inheriting environment variables is not supported.');
@@ -1393,7 +1383,7 @@ class Process implements \IteratorAggregate
         }
 
         ob_start();
-        phpinfo(\INFO_GENERAL);
+        phpinfo(INFO_GENERAL);
 
         return self::$sigchild = false !== strpos(ob_get_clean(), '--enable-sigchild');
     }
@@ -1497,8 +1487,8 @@ class Process implements \IteratorAggregate
         $this->exitcode = null;
         $this->fallbackStatus = [];
         $this->processInformation = null;
-        $this->stdout = fopen('php://temp/maxmemory:'.(1024 * 1024), 'w+');
-        $this->stderr = fopen('php://temp/maxmemory:'.(1024 * 1024), 'w+');
+        $this->stdout = fopen('php://temp/maxmemory:'.(1024 * 1024), 'w+b');
+        $this->stderr = fopen('php://temp/maxmemory:'.(1024 * 1024), 'w+b');
         $this->process = null;
         $this->latestSignal = null;
         $this->status = self::STATUS_READY;

@@ -18,11 +18,11 @@
 
 .quickedit-toolbar-container > .quickedit-toolbar-content,
 .quickedit-toolbar-container > .quickedit-toolbar-lining {
-  border-radius: 0.25rem;
+  border-radius: 4px;
 }
 
 .quickedit-button {
-  border-radius: 0.1875rem;
+  border-radius: 3px;
 }
 
 /**
@@ -70,5 +70,5 @@
  */
 
 .quickedit .icon-close:before {
-  top: 0.5rem;
+  top: 8px;
 }

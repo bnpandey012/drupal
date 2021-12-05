@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
+ */
+
 declare(strict_types=1);
 
 namespace Laminas\Diactoros\Response;
@@ -64,7 +70,7 @@ final class ArraySerializer
      * @param string $key
      * @param string $message
      * @return mixed
-     * @throws Exception\DeserializationException
+     * @throws UnexpectedValueException
      */
     private static function getValueFromKey(array $data, string $key, string $message = null)
     {

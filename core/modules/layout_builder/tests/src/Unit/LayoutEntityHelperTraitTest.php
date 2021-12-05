@@ -18,7 +18,7 @@ use Drupal\Tests\UnitTestCase;
 class LayoutEntityHelperTraitTest extends UnitTestCase {
 
   /**
-   * Data provider method for tests that need sections with inline blocks.
+   * Dataprovider method for tests that need sections with inline blocks.
    */
   public function providerSectionsWithInlineComponents() {
     $components = [];

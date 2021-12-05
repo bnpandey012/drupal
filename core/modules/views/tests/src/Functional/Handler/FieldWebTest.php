@@ -7,7 +7,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Url;
-use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
 use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\views\Views;
@@ -27,12 +26,12 @@ class FieldWebTest extends ViewTestBase {
    *
    * @var array
    */
-  public static $testViews = ['test_view', 'test_field_classes', 'test_field_output', 'test_click_sort', 'test_distinct_click_sorting'];
+  public static $testViews = ['test_view', 'test_field_classes', 'test_field_output', 'test_click_sort'];
 
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['node', 'language'];
+  protected static $modules = ['node'];
 
   /**
    * {@inheritdoc}
@@ -71,9 +70,9 @@ class FieldWebTest extends ViewTestBase {
     $this->assertSession()->statusCodeEquals(200);
 
     // Only the id and name should be click sortable, but not the name.
-    $this->assertSession()->linkByHrefExists(Url::fromRoute('<none>', [], ['query' => ['order' => 'id', 'sort' => 'asc']])->toString());
-    $this->assertSession()->linkByHrefExists(Url::fromRoute('<none>', [], ['query' => ['order' => 'name', 'sort' => 'desc']])->toString());
-    $this->assertSession()->linkByHrefNotExists(Url::fromRoute('<none>', [], ['query' => ['order' => 'created']])->toString());
+    $this->assertLinkByHref(Url::fromRoute('<none>', [], ['query' => ['order' => 'id', 'sort' => 'asc']])->toString());
+    $this->assertLinkByHref(Url::fromRoute('<none>', [], ['query' => ['order' => 'name', 'sort' => 'desc']])->toString());
+    $this->assertNoLinkByHref(Url::fromRoute('<none>', [], ['query' => ['order' => 'created']])->toString());
 
     // Check that the view returns the click sorting cache contexts.
     $expected_contexts = [
@@ -84,37 +83,20 @@ class FieldWebTest extends ViewTestBase {
     $this->assertCacheContexts($expected_contexts);
 
     // Clicking a click sort should change the order.
-    $this->clickLink('ID');
+    $this->clickLink(t('ID'));
     $href = Url::fromRoute('<none>', [], ['query' => ['order' => 'id', 'sort' => 'desc']])->toString();
-    $this->assertSession()->linkByHrefExists($href);
+    $this->assertLinkByHref($href);
     // Check that the output has the expected order (asc).
     $ids = $this->clickSortLoadIdsFromOutput();
-    $this->assertEquals(range(1, 5), $ids);
+    $this->assertEqual($ids, range(1, 5));
     // Check that the rel attribute has the correct value.
-    $this->assertSession()->elementAttributeContains('xpath', "//a[@href='$href']", 'rel', 'nofollow');
+    $result = $this->xpath('//a[@href="' . $href . '"]');
+    $this->assertEquals('nofollow', $result[0]->getAttribute('rel'));
 
-    $this->clickLink('ID Sort descending');
+    $this->clickLink(t('ID Sort descending'));
     // Check that the output has the expected order (desc).
     $ids = $this->clickSortLoadIdsFromOutput();
-    $this->assertEquals(range(5, 1, -1), $ids);
-  }
-
-  /**
-   * Tests the default click sorting functionality with distinct.
-   */
-  public function testClickSortingDistinct() {
-    ConfigurableLanguage::createFromLangcode('es')->save();
-    $node = $this->drupalCreateNode();
-    $this->drupalGet('test_distinct_click_sorting');
-    $this->assertSession()->statusCodeEquals(200);
-
-    // Check that the results are ordered by id in ascending order and that the
-    // title click filter is for descending.
-    $this->assertSession()->linkByHrefExists(Url::fromRoute('<none>', [], ['query' => ['order' => 'changed', 'sort' => 'desc']])->toString());
-    $this->assertSession()->pageTextContains($node->getTitle());
-    $this->clickLink('Changed');
-    $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains($node->getTitle());
+    $this->assertEqual($ids, range(5, 1, -1));
   }
 
   /**
@@ -143,9 +125,12 @@ class FieldWebTest extends ViewTestBase {
    *   The message to display along with the assertion.
    * @param string $group
    *   The type of assertion - examples are "Browser", "PHP".
+   *
+   * @return bool
+   *   TRUE if the assertion succeeded, FALSE otherwise.
    */
   protected function assertSubString($haystack, $needle, $message = '', $group = 'Other') {
-    $this->assertStringContainsString($needle, $haystack, $message);
+    return $this->assertStringContainsString($needle, $haystack, $message);
   }
 
   /**
@@ -159,9 +144,12 @@ class FieldWebTest extends ViewTestBase {
    *   The message to display along with the assertion.
    * @param string $group
    *   The type of assertion - examples are "Browser", "PHP".
+   *
+   * @return bool
+   *   TRUE if the assertion succeeded, FALSE otherwise.
    */
   protected function assertNotSubString($haystack, $needle, $message = '', $group = 'Other') {
-    $this->assertStringNotContainsString($needle, $haystack, $message);
+    return $this->assertStringNotContainsString($needle, $haystack, $message);
   }
 
   /**
@@ -200,7 +188,7 @@ class FieldWebTest extends ViewTestBase {
    */
   protected function xpathContent($content, $xpath, array $arguments = []) {
     if ($elements = $this->parseContent($content)) {
-      $xpath = $this->assertSession()->buildXPathQuery($xpath, $arguments);
+      $xpath = $this->buildXPathQuery($xpath, $arguments);
       $result = $elements->xpath($xpath);
       // Some combinations of PHP / libxml versions return an empty array
       // instead of the documented FALSE. Forcefully convert any falsish values
@@ -510,7 +498,7 @@ class FieldWebTest extends ViewTestBase {
       'marquee',
     ];
 
-    $this->assertEquals($expected_elements, array_keys($element_types));
+    $this->assertEqual(array_keys($element_types), $expected_elements);
   }
 
   /**

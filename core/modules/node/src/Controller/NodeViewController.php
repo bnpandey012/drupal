@@ -30,7 +30,7 @@ class NodeViewController extends EntityViewController {
   protected $entityRepository;
 
   /**
-   * Creates a NodeViewController object.
+   * Creates an NodeViewController object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.

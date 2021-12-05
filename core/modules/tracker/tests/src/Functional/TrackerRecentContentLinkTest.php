@@ -35,7 +35,13 @@ class TrackerRecentContentLinkTest extends BrowserTestBase {
     // Log in and get the homepage.
     $this->drupalLogin($user);
     $this->drupalGet('<front>');
-    $this->assertSession()->elementsCount('xpath', '//ul/li/a[contains(@href, "/activity") and text()="Recent content"]', 1);
+
+    $link = $this->xpath('//ul/li/a[contains(@href, :href) and text()=:text]', [
+      ':menu_class' => 'menu-item',
+      ':href' => '/activity',
+      ':text' => 'Recent content',
+    ]);
+    $this->assertCount(1, $link);
   }
 
 }

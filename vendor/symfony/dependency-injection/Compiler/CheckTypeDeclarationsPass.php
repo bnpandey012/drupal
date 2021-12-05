@@ -84,17 +84,12 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
             return $value;
         }
 
-        if (!$value instanceof Definition || $value->hasErrors() || $value->isDeprecated()) {
+        if (!$value instanceof Definition || $value->hasErrors()) {
             return parent::processValue($value, $isRoot);
         }
 
-        if (!$this->autoload) {
-            if (!$class = $value->getClass()) {
-                return parent::processValue($value, $isRoot);
-            }
-            if (!class_exists($class, false) && !interface_exists($class, false)) {
-                return parent::processValue($value, $isRoot);
-            }
+        if (!$this->autoload && !class_exists($class = $value->getClass(), false) && !interface_exists($class, false)) {
+            return parent::processValue($value, $isRoot);
         }
 
         if (ServiceLocator::class === $value->getClass()) {
@@ -158,27 +153,9 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
     /**
      * @throws InvalidParameterTypeException When a parameter is not compatible with the declared type
      */
-    private function checkType(Definition $checkedDefinition, $value, \ReflectionParameter $parameter, ?string $envPlaceholderUniquePrefix, \ReflectionType $reflectionType = null): void
+    private function checkType(Definition $checkedDefinition, $value, \ReflectionParameter $parameter, ?string $envPlaceholderUniquePrefix): void
     {
-        $reflectionType = $reflectionType ?? $parameter->getType();
-
-        if ($reflectionType instanceof \ReflectionUnionType) {
-            foreach ($reflectionType->getTypes() as $t) {
-                try {
-                    $this->checkType($checkedDefinition, $value, $parameter, $envPlaceholderUniquePrefix, $t);
-
-                    return;
-                } catch (InvalidParameterTypeException $e) {
-                }
-            }
-
-            throw new InvalidParameterTypeException($this->currentId, $e->getCode(), $parameter);
-        }
-        if (!$reflectionType instanceof \ReflectionNamedType) {
-            return;
-        }
-
-        $type = $reflectionType->getName();
+        $type = $parameter->getType()->getName();
 
         if ($value instanceof Reference) {
             if (!$this->container->has($value = (string) $value)) {
@@ -205,7 +182,7 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
         if ($value instanceof Definition) {
             $class = $value->getClass();
 
-            if ($class && isset(self::BUILTIN_TYPES[strtolower($class)])) {
+            if (isset(self::BUILTIN_TYPES[strtolower($class)])) {
                 $class = strtolower($class);
             } elseif (!$class || (!$this->autoload && !class_exists($class, false) && !interface_exists($class, false))) {
                 return;
@@ -221,10 +198,9 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
             }
         } elseif (\is_string($value)) {
             if ('%' === ($value[0] ?? '') && preg_match('/^%([^%]+)%$/', $value, $match)) {
-                $value = $this->container->getParameter(substr($value, 1, -1));
-            }
-
-            if ($envPlaceholderUniquePrefix && \is_string($value) && false !== strpos($value, 'env_')) {
+                // Only array parameters are not inlined when dumped.
+                $value = [];
+            } elseif ($envPlaceholderUniquePrefix && false !== strpos($value, 'env_')) {
                 // If the value is an env placeholder that is either mixed with a string or with another env placeholder, then its resolved value will always be a string, so we don't need to resolve it.
                 // We don't need to change the value because it is already a string.
                 if ('' === preg_replace('/'.$envPlaceholderUniquePrefix.'_\w+_[a-f0-9]{32}/U', '', $value, -1, $c) && 1 === $c) {
@@ -285,26 +261,15 @@ final class CheckTypeDeclarationsPass extends AbstractRecursivePass
             return;
         }
 
-        if ('mixed' === $type) {
-            return;
-        }
-
         if (is_a($class, $type, true)) {
             return;
         }
 
-        if ('false' === $type) {
-            if (false === $value) {
-                return;
-            }
-        } elseif ($reflectionType->isBuiltin()) {
-            $checkFunction = sprintf('is_%s', $type);
-            if ($checkFunction($value)) {
-                return;
-            }
-        }
+        $checkFunction = sprintf('is_%s', $parameter->getType()->getName());
 
-        throw new InvalidParameterTypeException($this->currentId, \is_object($value) ? $class : \gettype($value), $parameter);
+        if (!$parameter->getType()->isBuiltin() || !$checkFunction($value)) {
+            throw new InvalidParameterTypeException($this->currentId, \is_object($value) ? $class : \gettype($value), $parameter);
+        }
     }
 
     private function getExpressionLanguage(): ExpressionLanguage

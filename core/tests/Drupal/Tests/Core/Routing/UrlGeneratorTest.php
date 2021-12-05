@@ -137,10 +137,10 @@ class UrlGeneratorTest extends UnitTestCase {
     $this->provider = $provider;
     $this->provider->expects($this->any())
       ->method('getRouteByName')
-      ->willReturnMap($route_name_return_map);
+      ->will($this->returnValueMap($route_name_return_map));
     $provider->expects($this->any())
       ->method('getRoutesByNames')
-      ->willReturnMap($routes_names_return_map);
+      ->will($this->returnValueMap($routes_names_return_map));
 
     // Create an alias manager stub.
     $alias_manager = $this->getMockBuilder('Drupal\path_alias\AliasManager')
@@ -149,7 +149,7 @@ class UrlGeneratorTest extends UnitTestCase {
 
     $alias_manager->expects($this->any())
       ->method('getAliasByPath')
-      ->willReturnCallback([$this, 'aliasManagerCallback']);
+      ->will($this->returnCallback([$this, 'aliasManagerCallback']));
 
     $this->aliasManager = $alias_manager;
 
@@ -390,7 +390,7 @@ class UrlGeneratorTest extends UnitTestCase {
       ->method('processOutbound');
 
     $path = $this->generator->getPathFromRoute('test_3');
-    $this->assertEquals('test/two', $path);
+    $this->assertEquals($path, 'test/two');
   }
 
   /**
@@ -430,7 +430,7 @@ class UrlGeneratorTest extends UnitTestCase {
   }
 
   /**
-   * Confirms that explicitly setting the base_url works with generated routes.
+   * Confirms that explicitly setting the base_url works with generated routes
    */
   public function testBaseURLGeneration() {
     $options = ['base_url' => 'http://www.example.com:8888'];
@@ -452,8 +452,7 @@ class UrlGeneratorTest extends UnitTestCase {
   }
 
   /**
-   * Tests that the 'scheme' route requirement is respected during url
-   * generation.
+   * Test that the 'scheme' route requirement is respected during url generation.
    */
   public function testUrlGenerationWithHttpsRequirement() {
     $url = $this->generator->generate('test_4', [], TRUE);

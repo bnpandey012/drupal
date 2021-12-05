@@ -56,12 +56,12 @@ class SingleVisibleProfileTest extends InstallerTestBase {
    * Confirms that the installation succeeded.
    */
   public function testInstalled() {
-    $this->assertSession()->addressEquals('user/1');
+    $this->assertUrl('user/1');
     $this->assertSession()->statusCodeEquals(200);
     // Confirm that we are logged-in after installation.
-    $this->assertSession()->pageTextContains($this->rootUser->getAccountName());
+    $this->assertText($this->rootUser->getAccountName());
     // Confirm that the minimal profile was installed.
-    $this->assertEquals('minimal', \Drupal::installProfile());
+    $this->assertEqual(\Drupal::installProfile(), 'minimal');
   }
 
 }

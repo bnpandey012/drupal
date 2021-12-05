@@ -28,7 +28,7 @@ class EntityCreateAccessCheck implements AccessInterface {
   protected $requirementsKey = '_entity_create_access';
 
   /**
-   * Constructs an EntityCreateAccessCheck object.
+   * Constructs a EntityCreateAccessCheck object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.

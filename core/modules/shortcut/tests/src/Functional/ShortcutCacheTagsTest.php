@@ -101,7 +101,6 @@ class ShortcutCacheTagsTest extends EntityCacheTagsTestBase {
       'config:block_list',
       'config:shortcut.set.default',
       'config:system.menu.admin',
-      'config:system.theme',
       'config:user.role.authenticated',
       'rendered',
       'user:' . $this->rootUser->id(),

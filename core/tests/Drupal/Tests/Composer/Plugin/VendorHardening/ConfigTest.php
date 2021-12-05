@@ -4,7 +4,6 @@ namespace Drupal\Tests\Composer\Plugin\VendorHardening;
 
 use Composer\Package\RootPackageInterface;
 use Drupal\Composer\Plugin\VendorHardening\Config;
-use Drupal\Tests\Traits\PhpUnitWarnings;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -12,8 +11,6 @@ use PHPUnit\Framework\TestCase;
  * @group VendorHardening
  */
 class ConfigTest extends TestCase {
-
-  use PhpUnitWarnings;
 
   /**
    * @covers ::getPathsForPackage
@@ -116,7 +113,7 @@ class ConfigTest extends TestCase {
     $plugin_config = $ref_plugin_config->invoke($config);
 
     foreach (array_keys($plugin_config) as $package_name) {
-      $this->assertDoesNotMatchRegularExpression('/[A-Z]/', $package_name);
+      $this->assertNotRegExp('/[A-Z]/', $package_name);
     }
   }
 

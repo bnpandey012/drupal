@@ -4,7 +4,6 @@ namespace Drupal\Core;
 
 use Composer\Autoload\ClassLoader;
 use Drupal\Component\Assertion\Handle;
-use Drupal\Component\EventDispatcher\Event;
 use Drupal\Component\FileCache\FileCacheFactory;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\DatabaseBackend;
@@ -17,7 +16,6 @@ use Drupal\Core\DependencyInjection\ServiceProviderInterface;
 use Drupal\Core\DependencyInjection\YamlFileLoader;
 use Drupal\Core\Extension\ExtensionDiscovery;
 use Drupal\Core\File\MimeType\MimeTypeGuesser;
-use Drupal\Core\Http\InputBag;
 use Drupal\Core\Http\TrustedHostsRequestFactory;
 use Drupal\Core\Installer\InstallerKernel;
 use Drupal\Core\Installer\InstallerRedirectTrait;
@@ -34,7 +32,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\TerminableInterface;
-use Symfony\Component\HttpFoundation\InputBag as SymfonyInputBag;
 use TYPO3\PharStreamWrapper\Manager as PharStreamWrapperManager;
 use TYPO3\PharStreamWrapper\Behavior as PharStreamWrapperBehavior;
 use TYPO3\PharStreamWrapper\PharStreamWrapper;
@@ -459,7 +456,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     // Provide a default configuration, if not set.
     if (!isset($configuration['default'])) {
       // @todo Use extension_loaded('apcu') for non-testbot
-      //   https://www.drupal.org/node/2447753.
+      //  https://www.drupal.org/node/2447753.
       if (function_exists('apcu_fetch')) {
         $configuration['default']['cache_backend_class'] = '\Drupal\Component\FileCache\ApcuFileCacheBackend';
       }
@@ -515,7 +512,6 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     }
     $this->container->get('stream_wrapper_manager')->unregister();
     $this->booted = FALSE;
-    $this->configStorage = NULL;
     $this->container = NULL;
     $this->moduleList = NULL;
     $this->moduleData = [];
@@ -577,7 +573,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     // Sanitize the request.
     $request = RequestSanitizer::sanitize(
       $request,
-      (array) Settings::get(RequestSanitizer::SANITIZE_INPUT_SAFE_KEYS, []),
+      (array) Settings::get(RequestSanitizer::SANITIZE_WHITELIST, []),
       (bool) Settings::get(RequestSanitizer::SANITIZE_LOG, FALSE)
     );
 
@@ -694,14 +690,6 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
   public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = TRUE) {
     // Ensure sane PHP environment variables.
     static::bootEnvironment();
-
-    // Replace ParameterBag with InputBag for compatibility with Symfony 5.
-    // @todo Remove this when Symfony 4 is no longer supported.
-    foreach (['request', 'query', 'cookies'] as $bag) {
-      if (!($bag instanceof SymfonyInputBag)) {
-        $request->$bag = new InputBag($request->$bag->all());
-      }
-    }
 
     try {
       $this->initializeSettings($request);
@@ -964,7 +952,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     // Allow other parts of the codebase to react on container initialization in
     // subrequest.
     if (!empty($subrequest)) {
-      $this->container->get('event_dispatcher')->dispatch(new Event(), self::CONTAINER_INITIALIZE_SUBREQUEST_FINISHED);
+      $this->container->get('event_dispatcher')->dispatch(self::CONTAINER_INITIALIZE_SUBREQUEST_FINISHED);
     }
 
     // If needs dumping flag was set, dump the container.
@@ -994,6 +982,9 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
     if ($app_root === NULL) {
       $app_root = static::guessApplicationRoot();
     }
+
+    // Include our bootstrap file.
+    require_once $app_root . '/core/includes/bootstrap.inc';
 
     // Enforce E_STRICT, but allow users to set levels not part of E_STRICT.
     error_reporting(E_STRICT | E_ALL);
@@ -1234,7 +1225,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
       $path = 'core/lib/Drupal/' . $parent_directory;
       $parent_namespace = 'Drupal\\' . $parent_directory;
       foreach (new \DirectoryIterator($this->root . '/' . $path) as $component) {
-        /** @var \DirectoryIterator $component */
+        /** @var $component \DirectoryIterator */
         $pathname = $component->getPathname();
         if (!$component->isDot() && $component->isDir() && (
           is_dir($pathname . '/Plugin') ||
@@ -1362,7 +1353,7 @@ class DrupalKernel implements DrupalKernelInterface, TerminableInterface {
   }
 
   /**
-   * Gets a http kernel from the container.
+   * Gets a http kernel from the container
    *
    * @return \Symfony\Component\HttpKernel\HttpKernelInterface
    */

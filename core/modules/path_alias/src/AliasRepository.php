@@ -3,6 +3,7 @@
 namespace Drupal\path_alias;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Query\Condition;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Language\LanguageInterface;
 
@@ -36,7 +37,7 @@ class AliasRepository implements AliasRepositoryInterface {
       ->fields('base_table', ['path', 'alias']);
 
     if (!empty($preloaded)) {
-      $conditions = $this->connection->condition('OR');
+      $conditions = new Condition('OR');
       foreach ($preloaded as $preloaded_item) {
         $conditions->condition('base_table.path', $this->connection->escapeLike($preloaded_item), 'LIKE');
       }

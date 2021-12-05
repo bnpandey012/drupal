@@ -126,7 +126,7 @@ class BlockContentTranslationUITest extends ContentTranslationUITestBase {
 
     // Check that the translate operation link is shown.
     $this->drupalGet('admin/structure/block/block-content');
-    $this->assertSession()->linkByHrefExists('block/' . $entity->id() . '/translations');
+    $this->assertLinkByHref('block/' . $entity->id() . '/translations');
   }
 
   /**
@@ -145,7 +145,13 @@ class BlockContentTranslationUITest extends ContentTranslationUITestBase {
         $options = ['language' => $languages[$langcode]];
         $url = $entity->toUrl('edit-form', $options);
         $this->drupalGet($url);
-        $this->assertSession()->pageTextContains("Edit {$entity->bundle()} {$entity->getTranslation($langcode)->label()} [{$languages[$langcode]->getName()} translation]");
+
+        $title = t('<em>Edit @type</em> @title [%language translation]', [
+          '@type' => $entity->bundle(),
+          '@title' => $entity->getTranslation($langcode)->label(),
+          '%language' => $languages[$langcode]->getName(),
+        ]);
+        $this->assertRaw($title);
       }
     }
   }

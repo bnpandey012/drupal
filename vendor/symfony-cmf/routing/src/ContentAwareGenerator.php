@@ -47,6 +47,8 @@ class ContentAwareGenerator extends ProviderBasedGenerator
 
     /**
      * Set an optional content repository to find content by ids.
+     *
+     * @param ContentRepositoryInterface $contentRepository
      */
     public function setContentRepository(ContentRepositoryInterface $contentRepository)
     {
@@ -107,6 +109,7 @@ class ContentAwareGenerator extends ProviderBasedGenerator
      * Get the route by a string name.
      *
      * @param string $name
+     * @param array  $parameters
      *
      * @return SymfonyRoute
      *
@@ -126,7 +129,8 @@ class ContentAwareGenerator extends ProviderBasedGenerator
      * Determine if there is a route with matching locale associated with the
      * given route via associated content.
      *
-     * @param array $parameters
+     * @param SymfonyRoute $route
+     * @param array        $parameters
      *
      * @return SymfonyRoute either the passed route or an alternative with better locale
      */
@@ -248,7 +252,8 @@ class ContentAwareGenerator extends ProviderBasedGenerator
     }
 
     /**
-     * @param string $locale
+     * @param SymfonyRoute $route
+     * @param string       $locale
      *
      * @return bool true if there is either no $locale, no _locale requirement
      *              on the route or if the requirement and the passed $locale

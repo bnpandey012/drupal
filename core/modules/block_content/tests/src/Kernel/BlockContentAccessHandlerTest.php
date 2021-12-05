@@ -156,7 +156,7 @@ class BlockContentAccessHandlerTest extends KernelTestBase {
   }
 
   /**
-   * Data provider for testAccess().
+   * Dataprovider for testAccess().
    */
   public function providerTestAccess() {
     $cases = [

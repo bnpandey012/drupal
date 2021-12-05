@@ -6,12 +6,6 @@ use Drupal\Core\Database\SchemaObjectExistsException;
 use Drupal\Core\Database\SchemaObjectDoesNotExistException;
 use Drupal\Core\Database\Schema as DatabaseSchema;
 
-// cSpell:ignore adbin adnum adrelid adsrc attisdropped attname attnum attrdef
-// cSpell:ignore attrelid atttypid atttypmod bigserial conkey conname conrelid
-// cSpell:ignore contype fillfactor indexname indexrelid indisprimary indkey
-// cSpell:ignore indrelid nextval nspname regclass relkind relname relnamespace
-// cSpell:ignore schemaname setval
-
 /**
  * @addtogroup schemaapi
  * @{
@@ -103,16 +97,13 @@ class Schema extends DatabaseSchema {
    * We introspect the database to collect the information required by insert
    * and update queries.
    *
-   * @param string $table
+   * @param $table_name
    *   The non-prefixed name of the table.
    *
-   * @return mixed|object
+   * @return
    *   An object with two member variables:
-   *   - 'blob_fields' that lists all the blob fields in the table.
-   *   - 'sequences' that lists the sequences used in that table.
-   *
-   * @throws \Exception
-   *   Exception thrown when the query for the table information fails.
+   *     - 'blob_fields' that lists all the blob fields in the table.
+   *     - 'sequences' that lists the sequences used in that table.
    */
   public function queryTableInformation($table) {
     // Generate a key to reference this table's information on.
@@ -236,9 +227,6 @@ EOD;
    *
    * @return array
    *   An array containing all the constraint names for the field.
-   *
-   * @throws \Exception
-   *   Exception thrown when the query for the table information fails.
    */
   public function queryFieldInformation($table, $field, $constraint_type = 'c') {
     assert(in_array($constraint_type, ['c', 'f', 'p', 'u', 't', 'x']));
@@ -273,12 +261,12 @@ EOD;
   /**
    * Generate SQL to create a new table from a Drupal schema definition.
    *
-   * @param string $name
+   * @param $name
    *   The name of the table to create.
-   * @param array $table
+   * @param $table
    *   A Schema API table definition array.
    *
-   * @return array
+   * @return
    *   An array of SQL statements to create the table.
    */
   protected function createTableSql($name, $table) {
@@ -578,7 +566,6 @@ EOD;
 
       // If the index is already rewritten by ensureIdentifiersLength() to not
       // exceed the 63 chars limit of PostgreSQL, we need to take care of that.
-      // cSpell:disable-next-line
       // Example (drupal_Gk7Su_T1jcBHVuvSPeP22_I3Ni4GrVEgTYlIYnBJkro_idx).
       if (strpos($index->indexname, 'drupal_') !== FALSE) {
         preg_match('/^drupal_(.*)_' . preg_quote($index_type) . '/', $index->indexname, $matches);
@@ -958,12 +945,12 @@ EOD;
 
     if (isset($spec['not null'])) {
       if ($spec['not null']) {
-        $null_action = 'SET NOT NULL';
+        $nullaction = 'SET NOT NULL';
       }
       else {
-        $null_action = 'DROP NOT NULL';
+        $nullaction = 'DROP NOT NULL';
       }
-      $this->connection->query('ALTER TABLE {' . $table . '} ALTER "' . $field . '" ' . $null_action);
+      $this->connection->query('ALTER TABLE {' . $table . '} ALTER "' . $field . '" ' . $nullaction);
     }
 
     if (in_array($spec['pgsql_type'], ['serial', 'bigserial'])) {

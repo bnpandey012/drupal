@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityTypeRepositoryInterface;
 use Drupal\Core\Language\Language;
 use Drupal\entity_test\Entity\EntityTestMul;
+use Drupal\Tests\Traits\ExpectDeprecationTrait;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -18,6 +19,8 @@ use Drupal\Tests\UnitTestCase;
  * @group Access
  */
 class EntityUnitTest extends UnitTestCase {
+
+  use ExpectDeprecationTrait;
 
   /**
    * The entity under test.
@@ -195,11 +198,11 @@ class EntityUnitTest extends UnitTestCase {
   public function testAccess() {
     $access = $this->createMock('\Drupal\Core\Entity\EntityAccessControlHandlerInterface');
     $operation = $this->randomMachineName();
-    $access->expects($this->once())
+    $access->expects($this->at(0))
       ->method('access')
       ->with($this->entity, $operation)
       ->will($this->returnValue(AccessResult::allowed()));
-    $access->expects($this->once())
+    $access->expects($this->at(1))
       ->method('createAccess')
       ->will($this->returnValue(AccessResult::allowed()));
     $this->entityTypeManager->expects($this->exactly(2))
@@ -216,9 +219,9 @@ class EntityUnitTest extends UnitTestCase {
   public function testLanguage() {
     $this->entityType->expects($this->any())
       ->method('getKey')
-      ->willReturnMap([
+      ->will($this->returnValueMap([
         ['langcode', 'langcode'],
-      ]);
+      ]));
     $this->assertSame('en', $this->entity->language()->getId());
   }
 
@@ -396,21 +399,19 @@ class EntityUnitTest extends UnitTestCase {
    * @covers ::postSave
    */
   public function testPostSave() {
-    $this->cacheTagsInvalidator->expects($this->exactly(2))
+    $this->cacheTagsInvalidator->expects($this->at(0))
       ->method('invalidateTags')
-      ->withConsecutive([
-        [
-          // List cache tag.
-          $this->entityTypeId . '_list',
-        ],
-      ],
-      [
-        [
-          // Own cache tag.
-          $this->entityTypeId . ':' . $this->values['id'],
-          // List cache tag.
-          $this->entityTypeId . '_list',
-        ],
+      ->with([
+        // List cache tag.
+        $this->entityTypeId . '_list',
+      ]);
+    $this->cacheTagsInvalidator->expects($this->at(1))
+      ->method('invalidateTags')
+      ->with([
+        // Own cache tag.
+        $this->entityTypeId . ':' . $this->values['id'],
+        // List cache tag.
+        $this->entityTypeId . '_list',
       ]);
 
     // This method is internal, so check for errors on calling it only.
@@ -427,23 +428,21 @@ class EntityUnitTest extends UnitTestCase {
    * @covers ::postSave
    */
   public function testPostSaveBundle() {
-    $this->cacheTagsInvalidator->expects($this->exactly(2))
+    $this->cacheTagsInvalidator->expects($this->at(0))
       ->method('invalidateTags')
-      ->withConsecutive([
-        [
-          // List cache tag.
-          $this->entityTypeId . '_list',
-          $this->entityTypeId . '_list:' . $this->entity->bundle(),
-        ],
-      ],
-      [
-        [
-          // Own cache tag.
-          $this->entityTypeId . ':' . $this->values['id'],
-          // List cache tag.
-          $this->entityTypeId . '_list',
-          $this->entityTypeId . '_list:' . $this->entity->bundle(),
-        ],
+      ->with([
+        // List cache tag.
+        $this->entityTypeId . '_list',
+        $this->entityTypeId . '_list:' . $this->entity->bundle(),
+      ]);
+    $this->cacheTagsInvalidator->expects($this->at(1))
+      ->method('invalidateTags')
+      ->with([
+        // Own cache tag.
+        $this->entityTypeId . ':' . $this->values['id'],
+        // List cache tag.
+        $this->entityTypeId . '_list',
+        $this->entityTypeId . '_list:' . $this->entity->bundle(),
       ]);
 
     $this->entityType->expects($this->atLeastOnce())

@@ -37,7 +37,7 @@ class DateTimeFormInjectionTest extends KernelTestBase implements FormInterface 
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->installSchema('system', ['sequences']);
+    $this->installSchema('system', ['key_value_expire', 'sequences']);
   }
 
   /**

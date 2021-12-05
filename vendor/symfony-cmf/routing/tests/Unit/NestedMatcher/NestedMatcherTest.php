@@ -31,7 +31,7 @@ class NestedMatcherTest extends TestCase
 
     private $finalMatcher;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->provider = $this->createMock(RouteProviderInterface::class);
         $this->routeFilter1 = $this->createMock(RouteFilterInterface::class);

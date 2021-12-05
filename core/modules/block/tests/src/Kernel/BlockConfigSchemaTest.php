@@ -85,7 +85,7 @@ class BlockConfigSchemaTest extends KernelTestBase {
       $block->save();
 
       $config = $this->config("block.block.$id");
-      $this->assertEquals($id, $config->get('id'));
+      $this->assertEqual($config->get('id'), $id);
       $this->assertConfigSchema($this->typedConfig, $config->getName(), $config->get());
     }
   }

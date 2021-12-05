@@ -4,7 +4,6 @@ namespace Drupal\media_library\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseDialogCommand;
-use Drupal\Core\Ajax\FocusFirstCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
@@ -64,7 +63,7 @@ abstract class AddFormBase extends FormBase implements BaseFormIdInterface, Trus
   protected $openerResolver;
 
   /**
-   * Constructs an AddFormBase object.
+   * Constructs a AddFormBase object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
@@ -609,7 +608,7 @@ abstract class AddFormBase extends FormBase implements BaseFormIdInterface, Trus
       // source field).
       if (empty($added_media)) {
         $response->addCommand(new ReplaceCommand('#media-library-add-form-wrapper', $this->buildMediaLibraryUi($form_state)));
-        $response->addCommand(new FocusFirstCommand('#media-library-add-form-wrapper'));
+        $response->addCommand(new InvokeCommand('#media-library-add-form-wrapper :tabbable', 'focus'));
       }
       // When there are still more items, update the form and shift the focus to
       // the next media item. If the last list item is removed, shift focus to
@@ -739,7 +738,7 @@ abstract class AddFormBase extends FormBase implements BaseFormIdInterface, Trus
    *   The current form state.
    *
    * @return array|\Drupal\Core\Ajax\AjaxResponse
-   *   The form array when there are form errors or an AJAX response to select
+   *   The form array when there are form errors or a AJAX response to select
    *   the created items in the media library.
    */
   public function updateWidget(array &$form, FormStateInterface $form_state) {

@@ -41,7 +41,7 @@ class MediaAccessTest extends MediaFunctionalTestBase {
   }
 
   /**
-   * Tests some access control functionality.
+   * Test some access control functionality.
    */
   public function testMediaAccess() {
     $assert_session = $this->assertSession();
@@ -193,7 +193,7 @@ class MediaAccessTest extends MediaFunctionalTestBase {
   }
 
   /**
-   * Tests view access control on the canonical page.
+   * Test view access control on the canonical page.
    */
   public function testCanonicalMediaAccess() {
     $media_type = $this->createMediaType('test');
@@ -328,7 +328,7 @@ class MediaAccessTest extends MediaFunctionalTestBase {
 
     $this->container->get('router.builder')->rebuild();
 
-    // Create a media type and an entity reference to itself.
+    // Create a media type and a entity reference to itself.
     $media_type = $this->createMediaType('test');
 
     FieldStorageConfig::create([

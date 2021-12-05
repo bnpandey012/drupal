@@ -68,7 +68,7 @@ class ForumListingBreadcrumbBuilderTest extends UnitTestCase {
       ->will($this->returnValue($route_name));
     $route_match->expects($this->any())
       ->method('getParameter')
-      ->willReturnMap($parameter_map);
+      ->will($this->returnValueMap($parameter_map));
 
     $this->assertEquals($expected, $builder->applies($route_match));
   }
@@ -142,12 +142,12 @@ class ForumListingBreadcrumbBuilderTest extends UnitTestCase {
     $term2 = $prophecy->reveal();
 
     $term_storage = $this->getMockBuilder(TermStorageInterface::class)->getMock();
-    $term_storage->expects($this->exactly(2))
+    $term_storage->expects($this->at(0))
       ->method('loadAllParents')
-      ->willReturnOnConsecutiveCalls(
-        [$term1],
-        [$term1, $term2],
-      );
+      ->will($this->returnValue([$term1]));
+    $term_storage->expects($this->at(1))
+      ->method('loadAllParents')
+      ->will($this->returnValue([$term1, $term2]));
 
     // The root forum.
     $prophecy = $this->prophesize('Drupal\taxonomy\VocabularyInterface');
@@ -159,19 +159,19 @@ class ForumListingBreadcrumbBuilderTest extends UnitTestCase {
     $vocab_storage = $this->createMock('Drupal\Core\Entity\EntityStorageInterface');
     $vocab_storage->expects($this->any())
       ->method('load')
-      ->willReturnMap([
+      ->will($this->returnValueMap([
         ['forums', $prophecy->reveal()],
-      ]);
+      ]));
 
     $entity_type_manager = $this->getMockBuilder(EntityTypeManagerInterface::class)
       ->disableOriginalConstructor()
       ->getMock();
     $entity_type_manager->expects($this->any())
       ->method('getStorage')
-      ->willReturnMap([
+      ->will($this->returnValueMap([
         ['taxonomy_vocabulary', $vocab_storage],
         ['taxonomy_term', $term_storage],
-      ]);
+      ]));
 
     $config_factory = $this->getConfigFactoryStub(
       [

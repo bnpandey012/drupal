@@ -30,7 +30,7 @@ class MigrateDblogConfigsTest extends MigrateDrupal7TestBase {
    */
   public function testDblogSettings() {
     $config = $this->config('dblog.settings');
-    $this->assertSame(10000, $config->get('row_limit'));
+    $this->assertIdentical(10000, $config->get('row_limit'));
   }
 
 }

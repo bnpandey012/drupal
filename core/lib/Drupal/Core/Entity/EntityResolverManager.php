@@ -2,7 +2,6 @@
 
 namespace Drupal\Core\Entity;
 
-use Drupal\Component\Utility\Reflection;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use Symfony\Component\Routing\Route;
 
@@ -75,10 +74,6 @@ class EntityResolverManager {
       }
     }
 
-    if ($controller === NULL) {
-      return NULL;
-    }
-
     if (strpos($controller, ':') === FALSE) {
       if (method_exists($controller, '__invoke')) {
         return [$controller, '__invoke'];
@@ -140,8 +135,7 @@ class EntityResolverManager {
       if (isset($entity_types[$parameter_name])) {
         $entity_type = $entity_types[$parameter_name];
         $entity_class = $entity_type->getClass();
-        $reflection_class = Reflection::getParameterClassName($parameter);
-        if ($reflection_class && (is_subclass_of($entity_class, $reflection_class) || $entity_class == $reflection_class)) {
+        if (($reflection_class = $parameter->getClass()) && (is_subclass_of($entity_class, $reflection_class->name) || $entity_class == $reflection_class->name)) {
           $parameter_definitions += [$parameter_name => []];
           $parameter_definitions[$parameter_name] += [
             'type' => 'entity:' . $parameter_name,

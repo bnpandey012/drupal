@@ -64,6 +64,7 @@ class WorkspaceCRUDTest extends KernelTestBase {
 
     $this->setUpCurrentUser();
 
+    $this->installSchema('system', ['key_value_expire']);
     $this->installSchema('node', ['node_access']);
 
     $this->installEntitySchema('workspace');

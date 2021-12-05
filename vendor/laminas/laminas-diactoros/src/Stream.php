@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @see       https://github.com/laminas/laminas-diactoros for the canonical source repository
+ * @copyright https://github.com/laminas/laminas-diactoros/blob/master/COPYRIGHT.md
+ * @license   https://github.com/laminas/laminas-diactoros/blob/master/LICENSE.md New BSD License
+ */
+
 declare(strict_types=1);
 
 namespace Laminas\Diactoros;
@@ -34,11 +40,6 @@ use const SEEK_SET;
  */
 class Stream implements StreamInterface
 {
-    /**
-     * A list of allowed stream resource types that are allowed to instantiate a Stream
-     */
-    private const ALLOWED_STREAM_RESOURCE_TYPES = ['gd', 'stream'];
-
     /**
      * @var resource|null
      */
@@ -341,10 +342,10 @@ class Stream implements StreamInterface
         }
 
         if ($error) {
-            throw new Exception\RuntimeException('Invalid stream reference provided');
+            throw new Exception\InvalidArgumentException('Invalid stream reference provided');
         }
 
-        if (! $this->isValidStreamResourceType($resource)) {
+        if (! is_resource($resource) || 'stream' !== get_resource_type($resource)) {
             throw new Exception\InvalidArgumentException(
                 'Invalid stream provided; must be a string stream identifier or stream resource'
             );
@@ -355,23 +356,5 @@ class Stream implements StreamInterface
         }
 
         $this->resource = $resource;
-    }
-
-    /**
-     * Determine if a resource is one of the resource types allowed to instantiate a Stream
-     *
-     * @param resource $resource Stream resource.
-     */
-    private function isValidStreamResourceType($resource): bool
-    {
-        if (is_resource($resource)) {
-            return in_array(get_resource_type($resource), self::ALLOWED_STREAM_RESOURCE_TYPES, true);
-        }
-
-        if (PHP_VERSION_ID >= 80000 && $resource instanceof \GdImage) {
-            return true;
-        }
-
-        return false;
     }
 }

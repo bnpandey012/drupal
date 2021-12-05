@@ -101,7 +101,6 @@ class ContentEntityNonRevisionableFieldTest extends EntityKernelTestBase {
       1 => 1,
     ];
     $revision_ids = $this->mulRev->getQuery()
-      ->accessCheck(FALSE)
       ->allRevisions()
       ->sort('revision_id', 'DESC')
       ->execute();
@@ -112,7 +111,6 @@ class ContentEntityNonRevisionableFieldTest extends EntityKernelTestBase {
       1 => 1,
     ];
     $non_rev_field_revision_ids = $this->mulRev->getQuery()
-      ->accessCheck(FALSE)
       ->allRevisions()
       ->condition('non_rev_field', 'Huron')
       ->sort('revision_id', 'DESC')
@@ -162,7 +160,6 @@ class ContentEntityNonRevisionableFieldTest extends EntityKernelTestBase {
       1 => 1,
     ];
     $revision_ids = $this->rev->getQuery()
-      ->accessCheck(FALSE)
       ->allRevisions()
       ->sort('revision_id', 'DESC')
       ->execute();
@@ -173,7 +170,6 @@ class ContentEntityNonRevisionableFieldTest extends EntityKernelTestBase {
       1 => 1,
     ];
     $non_rev_field_revision_ids = $this->rev->getQuery()
-      ->accessCheck(FALSE)
       ->allRevisions()
       ->condition('non_rev_field', 'Superior')
       ->sort('revision_id', 'DESC')

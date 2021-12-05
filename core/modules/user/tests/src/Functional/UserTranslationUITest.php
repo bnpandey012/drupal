@@ -75,13 +75,18 @@ class UserTranslationUITest extends ContentTranslationUITestBase {
         $options = ['language' => $languages[$langcode]];
         $url = $entity->toUrl('edit-form', $options);
         $this->drupalGet($url);
-        $this->assertSession()->pageTextContains("{$entity->getTranslation($langcode)->label()} [{$languages[$langcode]->getName()} translation]");
+
+        $title = t('@title [%language translation]', [
+          '@title' => $entity->getTranslation($langcode)->label(),
+          '%language' => $languages[$langcode]->getName(),
+        ]);
+        $this->assertRaw($title);
       }
     }
   }
 
   /**
-   * Tests translated user deletion.
+   * Test translated user deletion.
    */
   public function testTranslatedUserDeletion() {
     $this->drupalLogin($this->administrator);
@@ -97,8 +102,7 @@ class UserTranslationUITest extends ContentTranslationUITestBase {
       'edit-form',
       ['language' => $this->container->get('language_manager')->getLanguage('en')]
     );
-    $this->drupalGet($url);
-    $this->submitForm([], 'Cancel account');
+    $this->drupalPostForm($url, [], t('Cancel account'));
     $this->assertSession()->statusCodeEquals(200);
   }
 

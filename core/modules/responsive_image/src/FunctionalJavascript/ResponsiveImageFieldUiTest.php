@@ -6,7 +6,7 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\responsive_image\Entity\ResponsiveImageStyle;
 
 /**
- * Tests the responsive image field UI.
+ * Class ResponsiveImageFieldUiTest.
  *
  * @group responsive_image
  */

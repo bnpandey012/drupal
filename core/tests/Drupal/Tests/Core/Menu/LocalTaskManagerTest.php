@@ -178,18 +178,23 @@ class LocalTaskManagerTest extends UnitTestCase {
 
     $result = $this->getLocalTasksForRouteResult($mock_plugin);
 
-    $this->cacheBackend->expects($this->exactly(2))
+    $this->cacheBackend->expects($this->at(0))
       ->method('get')
-      ->withConsecutive(
-        ['local_task_plugins:en:menu_local_task_test_tasks_view'],
-        ['local_task_plugins:en'],
-      );
-    $this->cacheBackend->expects($this->exactly(2))
+      ->with('local_task_plugins:en:menu_local_task_test_tasks_view');
+
+    $this->cacheBackend->expects($this->at(1))
+      ->method('get')
+      ->with('local_task_plugins:en');
+
+    $this->cacheBackend->expects($this->at(2))
       ->method('set')
-      ->withConsecutive(
-        ['local_task_plugins:en', $definitions, Cache::PERMANENT],
-        ['local_task_plugins:en:menu_local_task_test_tasks_view', $this->getLocalTasksCache(), Cache::PERMANENT, ['local_task']],
-      );
+      ->with('local_task_plugins:en', $definitions, Cache::PERMANENT);
+
+    $expected_set = $this->getLocalTasksCache();
+
+    $this->cacheBackend->expects($this->at(3))
+      ->method('set')
+      ->with('local_task_plugins:en:menu_local_task_test_tasks_view', $expected_set, Cache::PERMANENT, ['local_task']);
 
     $local_tasks = $this->manager->getLocalTasksForRoute('menu_local_task_test_tasks_view');
     $this->assertEquals($result, $local_tasks);
@@ -209,7 +214,7 @@ class LocalTaskManagerTest extends UnitTestCase {
 
     $result = $this->getLocalTasksCache($mock_plugin);
 
-    $this->cacheBackend->expects($this->once())
+    $this->cacheBackend->expects($this->at(0))
       ->method('get')
       ->with('local_task_plugins:en:menu_local_task_test_tasks_view')
       ->will($this->returnValue((object) ['data' => $result]));
@@ -336,7 +341,7 @@ class LocalTaskManagerTest extends UnitTestCase {
     }
     $this->factory->expects($this->any())
       ->method('createInstance')
-      ->willReturnMap($map);
+      ->will($this->returnValueMap($map));
   }
 
   /**
@@ -431,7 +436,7 @@ class LocalTaskManagerTest extends UnitTestCase {
       ->willReturn(new ParameterBag());
 
     $cacheability = new CacheableMetadata();
-    $this->manager->getTasksBuild('menu_local_task_test_tasks_view', $cacheability);
+    $local_tasks = $this->manager->getTasksBuild('menu_local_task_test_tasks_view', $cacheability);
 
     // Ensure that all cacheability metadata is merged together.
     $this->assertEquals(['tag.example1', 'tag.example2'], $cacheability->getCacheTags());
@@ -468,7 +473,7 @@ class LocalTaskManagerTest extends UnitTestCase {
 
     $this->factory->expects($this->any())
       ->method('createInstance')
-      ->willReturnMap($map);
+      ->will($this->returnValueMap($map));
   }
 
   protected function setupNullCacheabilityMetadataValidation() {

@@ -23,7 +23,7 @@
    * @return {boolean}
    *   True if the object is a function.
    */
-  const isFunction = (obj) =>
+  const isFunction = obj =>
     Object.prototype.toString.call(obj) === '[object Function]';
 
   /**
@@ -39,7 +39,10 @@
    */
   const parseCookieValue = (value, parseJson) => {
     if (value.indexOf('"') === 0) {
-      value = value.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      value = value
+        .slice(1, -1)
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, '\\');
     }
 
     try {
@@ -145,7 +148,7 @@
       }
 
       const cookieSetter = cookies.withConverter({
-        write: (cookieValue) => encodeURIComponent(cookieValue),
+        write: cookieValue => encodeURIComponent(cookieValue),
       });
 
       value =
@@ -174,7 +177,7 @@
     }
 
     const results = cookiesShim.get();
-    Object.keys(results).forEach((resultKey) => {
+    Object.keys(results).forEach(resultKey => {
       if (results[resultKey] === undefined) {
         delete results[resultKey];
       }

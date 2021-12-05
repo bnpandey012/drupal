@@ -28,7 +28,7 @@ class RouteContentEnhancerTest extends TestCase
 
     private $request;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->document = $this->createMock(RouteObject::class);
 

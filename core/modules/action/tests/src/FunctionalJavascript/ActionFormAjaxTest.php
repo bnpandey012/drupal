@@ -7,7 +7,7 @@ use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
 use Drupal\system\Entity\Action;
 
 /**
- * Tests action plugins using JavaScript.
+ * Tests action plugins using Javascript.
  *
  * @group action
  */

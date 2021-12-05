@@ -132,7 +132,7 @@ class DefaultViewsTest extends ViewTestBase {
   }
 
   /**
-   * Tests that all Default views work as expected.
+   * Test that all Default views work as expected.
    */
   public function testDefaultViews() {
     // Get all default views.
@@ -150,12 +150,14 @@ class DefaultViewsTest extends ViewTestBase {
           $view->preExecute($this->viewArgMap[$name]);
         }
 
+        $this->assert(TRUE, new FormattableMarkup('View @view will be executed.', ['@view' => $view->storage->id()]));
         $view->execute();
 
         $tokens = ['@name' => $name, '@display_id' => $display_id];
         $this->assertTrue($view->executed, new FormattableMarkup('@name:@display_id has been executed.', $tokens));
 
-        $this->assertNotEmpty($view->result);
+        $count = count($view->result);
+        $this->assertTrue($count > 0, new FormattableMarkup('@count results returned', ['@count' => $count]));
         $view->destroy();
       }
     }

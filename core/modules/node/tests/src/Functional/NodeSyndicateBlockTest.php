@@ -36,11 +36,7 @@ class NodeSyndicateBlockTest extends NodeTestBase {
     // Place the "Syndicate" block and confirm that it is rendered.
     $this->drupalPlaceBlock('node_syndicate_block', ['id' => 'test_syndicate_block']);
     $this->drupalGet('');
-    $this->assertSession()->elementExists('xpath', '//div[@id="block-test-syndicate-block"]/*');
-    // Tests the syndicate block RSS link rendered at non-front pages.
-    $this->drupalGet('user');
-    $this->clickLink('Subscribe to');
-    $this->assertSession()->addressEquals('rss.xml');
+    $this->assertFieldByXPath('//div[@id="block-test-syndicate-block"]/*', NULL, 'Syndicate block found.');
   }
 
 }

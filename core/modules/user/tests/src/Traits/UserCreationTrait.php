@@ -177,7 +177,7 @@ trait UserCreationTrait {
     }
     $edit += [
       'mail' => $edit['name'] . '@example.com',
-      'pass' => \Drupal::service('password_generator')->generate(),
+      'pass' => user_password(),
       'status' => 1,
     ];
     if ($rid) {
@@ -272,7 +272,10 @@ trait UserCreationTrait {
     }
     $result = $role->save();
 
-    $this->assertSame(SAVED_NEW, $result, new FormattableMarkup('Created role ID @rid with name @name.', ['@name' => var_export($role->label(), TRUE), '@rid' => var_export($role->id(), TRUE)]), 'Role');
+    $this->assertIdentical($result, SAVED_NEW, new FormattableMarkup('Created role ID @rid with name @name.', [
+      '@name' => var_export($role->label(), TRUE),
+      '@rid' => var_export($role->id(), TRUE),
+    ]), 'Role');
 
     if ($result === SAVED_NEW) {
       // Grant the specified permissions to the role, if any.

@@ -71,7 +71,7 @@ class ArgumentValidatorTermTest extends TaxonomyTestBase {
       $view->argument['tid']->argument_validated = NULL;
     }
 
-    // Pass in an invalid term.
+    // Pass in a invalid term.
     $this->assertFalse($view->argument['tid']->setArgument(rand(1000, 10000)));
     $this->assertEmpty($view->argument['tid']->getTitle());
     $view->argument['tid']->validated_title = NULL;

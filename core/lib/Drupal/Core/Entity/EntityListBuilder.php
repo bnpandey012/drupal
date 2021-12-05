@@ -95,7 +95,6 @@ class EntityListBuilder extends EntityHandlerBase implements EntityListBuilderIn
    */
   protected function getEntityIds() {
     $query = $this->getStorage()->getQuery()
-      ->accessCheck(TRUE)
       ->sort($this->entityType->getKey('id'));
 
     // Only add the pager if a limit is specified.
@@ -233,7 +232,9 @@ class EntityListBuilder extends EntityHandlerBase implements EntityListBuilderIn
   /**
    * Gets the title of the page.
    */
-  protected function getTitle() {}
+  protected function getTitle() {
+    return;
+  }
 
   /**
    * Ensures that a destination is present on the given URL.

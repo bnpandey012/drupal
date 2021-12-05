@@ -44,11 +44,11 @@ class NidArgumentTest extends ViewsKernelTestBase {
     $this->installEntitySchema('user');
     $this->installConfig(['node', 'field']);
 
-    ViewTestData::createTestViews(static::class, ['node_test_views']);
+    ViewTestData::createTestViews(get_class($this), ['node_test_views']);
   }
 
   /**
-   * Tests the nid argument.
+   * Test the nid argument.
    */
   public function testNidArgument() {
     $view = Views::getView('test_nid_argument');
@@ -68,14 +68,14 @@ class NidArgumentTest extends ViewsKernelTestBase {
     $view->preview();
     $this->assertCount(2, $view->result, 'Found the expected number of results.');
 
-    // Set the second node id as an argument.
+    // Set an the second node id as an argument.
     $view->destroy();
     $view->preview('default', [$node2->id()]);
     // Verify that the title is overridden.
-    $this->assertEquals($node2->getTitle(), $view->getTitle());
+    $this->assertEqual($view->getTitle(), $node2->getTitle());
     // Verify that the argument filtering works.
     $this->assertCount(1, $view->result, 'Found the expected number of results.');
-    $this->assertEquals($node2->id(), (string) $view->style_plugin->getField(0, 'nid'), 'Found the correct nid.');
+    $this->assertEqual($node2->id(), (string) $view->style_plugin->getField(0, 'nid'), 'Found the correct nid.');
 
     // Verify that setting a non-existing id as argument results in no nodes
     // being shown.

@@ -112,7 +112,10 @@ class HtmlResponseAttachmentsProcessor implements AttachmentsResponseProcessorIn
    * {@inheritdoc}
    */
   public function processAttachments(AttachmentsInterface $response) {
-    assert($response instanceof HtmlResponse);
+    // @todo Convert to assertion once https://www.drupal.org/node/2408013 lands
+    if (!$response instanceof HtmlResponse) {
+      throw new \InvalidArgumentException('\Drupal\Core\Render\HtmlResponse instance expected.');
+    }
 
     // First, render the actual placeholders; this may cause additional
     // attachments to be added to the response, which the attachment

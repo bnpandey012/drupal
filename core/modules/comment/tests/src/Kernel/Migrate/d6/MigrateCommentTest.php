@@ -39,6 +39,9 @@ class MigrateCommentTest extends MigrateDrupal6TestBase {
     $this->installSchema('node', ['node_access']);
     $this->installConfig(['comment']);
 
+    // The entity.node.canonical route must exist when the RDF hook is called.
+    $this->container->get('router.builder')->rebuild();
+
     $this->migrateContent();
     $this->executeMigrations([
       'language',

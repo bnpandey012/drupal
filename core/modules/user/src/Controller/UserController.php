@@ -313,9 +313,7 @@ class UserController extends ControllerBase {
    *   A redirection to home page.
    */
   public function logout() {
-    if ($this->currentUser()->isAuthenticated()) {
-      user_logout();
-    }
+    user_logout();
     return $this->redirect('<front>');
   }
 

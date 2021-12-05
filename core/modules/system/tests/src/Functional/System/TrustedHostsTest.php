@@ -29,17 +29,15 @@ class TrustedHostsTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the status page behavior with no setting.
-   *
-   * Checks that an error is shown when the trusted host setting is missing from
-   * settings.php
+   * Tests that the status page shows an error when the trusted host setting
+   * is missing from settings.php
    */
   public function testStatusPageWithoutConfiguration() {
     $this->drupalGet('admin/reports/status');
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->assertSession()->pageTextContains("Trusted Host Settings");
-    $this->assertSession()->pageTextContains("The trusted_host_patterns setting is not configured in settings.php.");
+    $this->assertRaw(t('Trusted Host Settings'));
+    $this->assertRaw(t('The trusted_host_patterns setting is not configured in settings.php.'));
   }
 
   /**
@@ -56,8 +54,8 @@ class TrustedHostsTest extends BrowserTestBase {
     $this->drupalGet('admin/reports/status');
     $this->assertSession()->statusCodeEquals(200);
 
-    $this->assertSession()->pageTextContains("Trusted Host Settings");
-    $this->assertSession()->pageTextContains("The trusted_host_patterns setting is set to allow");
+    $this->assertRaw(t('Trusted Host Settings'));
+    $this->assertRaw(t('The trusted_host_patterns setting is set to allow'));
   }
 
   /**
@@ -67,6 +65,7 @@ class TrustedHostsTest extends BrowserTestBase {
    */
   public function testFakeRequests() {
     $this->container->get('module_installer')->install(['trusted_hosts_test']);
+    $this->container->get('router.builder')->rebuild();
 
     $host = $this->container->get('request_stack')->getCurrentRequest()->getHost();
     $settings['settings']['trusted_host_patterns'] = (object) [
@@ -77,7 +76,7 @@ class TrustedHostsTest extends BrowserTestBase {
     $this->writeSettings($settings);
 
     $this->drupalGet('trusted-hosts-test/fake-request');
-    $this->assertSession()->pageTextContains('Host: ' . $host);
+    $this->assertText('Host: ' . $host);
   }
 
   /**
@@ -86,6 +85,7 @@ class TrustedHostsTest extends BrowserTestBase {
   public function testShortcut() {
     $this->container->get('module_installer')->install(['block', 'shortcut']);
     $this->rebuildContainer();
+    $this->container->get('router.builder')->rebuild();
 
     /** @var \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager */
     $entity_type_manager = $this->container->get('entity_type.manager');

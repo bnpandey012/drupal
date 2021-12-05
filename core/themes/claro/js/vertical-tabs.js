@@ -63,6 +63,7 @@
     $.extend(this, settings, Drupal.theme('verticalTab', settings));
     this.item.addClass('js-vertical-tabs-menu-item');
     this.link.attr('href', "#".concat(settings.details.attr('id')));
+    this.detailsSummaryDescription = $(Drupal.theme.verticalTabDetailsDescription()).appendTo(this.details.find('> summary'));
     this.link.on('click', function (event) {
       event.preventDefault();
       self.focus();
@@ -132,6 +133,7 @@
     },
     updateSummary: function updateSummary() {
       var summary = this.details.drupalGetSummary();
+      this.detailsSummaryDescription.html(summary);
       this.summary.html(summary);
     },
     tabShow: function tabShow() {
@@ -172,6 +174,10 @@
 
   Drupal.theme.verticalTabListWrapper = function () {
     return '<ul class="vertical-tabs__menu"></ul>';
+  };
+
+  Drupal.theme.verticalTabDetailsDescription = function () {
+    return '<span class="vertical-tabs__details-summary-summary"></span>';
   };
 
   Drupal.theme.verticalTabActiveTabIndicator = function () {

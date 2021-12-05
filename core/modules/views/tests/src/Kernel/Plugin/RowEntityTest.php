@@ -46,6 +46,7 @@ class RowEntityTest extends ViewsKernelTestBase {
 
     $this->installEntitySchema('taxonomy_term');
     $this->installConfig(['taxonomy']);
+    \Drupal::service('router.builder')->rebuild();
   }
 
   /**

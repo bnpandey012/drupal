@@ -29,7 +29,7 @@ abstract class ImageFieldTestBase extends WebDriverTestBase {
   ];
 
   /**
-   * A user with permissions to administer content types and image styles.
+   * An user with permissions to administer content types and image styles.
    *
    * @var \Drupal\user\UserInterface
    */

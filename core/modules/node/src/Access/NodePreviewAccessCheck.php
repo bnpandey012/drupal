@@ -22,7 +22,7 @@ class NodePreviewAccessCheck implements AccessInterface {
   protected $entityTypeManager;
 
   /**
-   * Constructs an EntityCreateAccessCheck object.
+   * Constructs a EntityCreateAccessCheck object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.

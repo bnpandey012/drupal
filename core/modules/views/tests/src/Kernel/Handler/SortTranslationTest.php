@@ -89,11 +89,12 @@ class SortTranslationTest extends ViewsKernelTestBase {
       $translation->title->value = 'Title DE ' . $i;
       $translation->text->value = 'moo DE ' . $i;
       $translation->save();
+      $nodes[] = $node;
     }
   }
 
   /**
-   * Tests sorting on an untranslated field.
+   * Test sorting on an untranslated field.
    */
   public function testSortbyUntranslatedIntegerField() {
     $map = [

@@ -35,7 +35,7 @@ class MigrateNodeTitleLabelTest extends MigrateDrupal7TestBase {
     $override = BaseFieldOverride::load($id);
     $this->assertInstanceOf(BaseFieldOverride::class, $override);
     /** @var \Drupal\Core\Field\Entity\BaseFieldOverride $override */
-    $this->assertSame($label, $override->getLabel());
+    $this->assertIdentical($label, $override->getLabel());
   }
 
   /**

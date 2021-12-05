@@ -65,9 +65,7 @@ class ExtensionInstallStorage extends InstallStorage {
     return new static(
       $this->configStorage,
       $this->directory,
-      $collection,
-      $this->includeProfile,
-      $this->installProfile
+      $collection
     );
   }
 

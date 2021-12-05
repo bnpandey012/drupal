@@ -6,10 +6,6 @@ use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Connection as DatabaseConnection;
 use Drupal\Core\Database\DatabaseAccessDeniedException;
 use Drupal\Core\Database\DatabaseNotFoundException;
-use Drupal\Core\Database\StatementInterface;
-use Drupal\Core\Database\StatementWrapper;
-
-// cSpell:ignore ilike nextval
 
 /**
  * @addtogroup database
@@ -40,16 +36,6 @@ class Connection extends DatabaseConnection {
   const CONNECTION_FAILURE = '08006';
 
   /**
-   * {@inheritdoc}
-   */
-  protected $statementClass = NULL;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected $statementWrapperClass = StatementWrapper::class;
-
-  /**
    * A map of condition operators to PostgreSQL operators.
    *
    * In PostgreSQL, 'LIKE' is case-sensitive. ILIKE should be used for
@@ -66,11 +52,6 @@ class Connection extends DatabaseConnection {
   /**
    * {@inheritdoc}
    */
-  protected $transactionalDDLSupport = TRUE;
-
-  /**
-   * {@inheritdoc}
-   */
   protected $identifierQuotes = ['"', '"'];
 
   /**
@@ -78,6 +59,15 @@ class Connection extends DatabaseConnection {
    */
   public function __construct(\PDO $connection, array $connection_options) {
     parent::__construct($connection, $connection_options);
+
+    // This driver defaults to transaction support, except if explicitly passed FALSE.
+    $this->transactionSupport = !isset($connection_options['transactions']) || ($connection_options['transactions'] !== FALSE);
+
+    // Transactional DDL is always available in PostgreSQL,
+    // but we'll only enable it if standard transactions are.
+    $this->transactionalDDLSupport = $this->transactionSupport;
+
+    $this->connectionOptions = $connection_options;
 
     // Force PostgreSQL to use the UTF-8 character set by default.
     $this->connection->exec("SET NAMES 'UTF8'");
@@ -198,16 +188,12 @@ class Connection extends DatabaseConnection {
     return $return;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function prepareStatement(string $query, array $options): StatementInterface {
+  public function prepareQuery($query, $quote_identifiers = TRUE) {
     // mapConditionOperator converts some operations (LIKE, REGEXP, etc.) to
     // PostgreSQL equivalents (ILIKE, ~*, etc.). However PostgreSQL doesn't
     // automatically cast the fields to the right type for these operators,
     // so we need to alter the query and add the type-cast.
-    $query = preg_replace('/ ([^ ]+) +(I*LIKE|NOT +I*LIKE|~\*|!~\*) /i', ' ${1}::text ${2} ', $query);
-    return parent::prepareStatement($query, $options);
+    return parent::prepareQuery(preg_replace('/ ([^ ]+) +(I*LIKE|NOT +I*LIKE|~\*|!~\*) /i', ' ${1}::text ${2} ', $query), $quote_identifiers);
   }
 
   public function queryRange($query, $from, $count, array $args = [], array $options = []) {
@@ -271,7 +257,7 @@ class Connection extends DatabaseConnection {
   public function nextId($existing = 0) {
 
     // Retrieve the name of the sequence. This information cannot be cached
-    // because the prefix may change, for example, like it does in tests.
+    // because the prefix may change, for example, like it does in simpletests.
     $sequence_name = $this->makeSequenceName('sequences', 'value');
 
     // When PostgreSQL gets a value too small then it will lock the table,
@@ -319,7 +305,7 @@ class Connection extends DatabaseConnection {
   }
 
   /**
-   * Add a new savepoint with a unique name.
+   * Add a new savepoint with an unique name.
    *
    * The main use for this method is to mimic InnoDB functionality, which
    * provides an inherent savepoint before any query in a transaction.
@@ -362,6 +348,21 @@ class Connection extends DatabaseConnection {
     if (isset($this->transactionLayers[$savepoint_name])) {
       $this->rollBack($savepoint_name);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function upsert($table, array $options = []) {
+    // Use the (faster) native Upsert implementation for PostgreSQL >= 9.5.
+    if (version_compare($this->version(), '9.5', '>=')) {
+      $class = $this->getDriverClass('NativeUpsert');
+    }
+    else {
+      $class = $this->getDriverClass('Upsert');
+    }
+
+    return new $class($this, $table, $options);
   }
 
 }

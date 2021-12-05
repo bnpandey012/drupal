@@ -31,12 +31,4 @@
       });
     }
   };
-
-  Drupal.theme.detailsSummarizedContentWrapper = function () {
-    return "<span class=\"claro-details__summary-summary\"></span>";
-  };
-
-  Drupal.theme.detailsSummarizedContentText = function (text) {
-    return text || '';
-  };
 })(jQuery, Modernizr, Drupal);
