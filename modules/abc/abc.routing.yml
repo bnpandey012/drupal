@@ -1,0 +1,6 @@
+abc.test:
+ path: '/test'
+ defaults:
+   _controller: '\Drupal\abc\Controller\Test::data'
+ requirements:
+   _permission: 'access content'
